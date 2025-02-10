@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:safety_application/bottom_sheet.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class GoogleMapFlutter extends StatefulWidget {
   const GoogleMapFlutter({super.key});
@@ -14,6 +16,17 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
   late GoogleMapController _mapController;
   final Location _location = Location();
   bool _isReviewVisible = false; // Track if review form is open
+  final TextEditingController _searchController = TextEditingController();
+
+  bool _isUserNavigating =
+      false; // Prevents auto-panning when manually navigating
+  List<dynamic> _predictions = [];
+  String? _selectedPlaceId;
+  LatLng? _selectedLocation;
+  LocationData? _currentLocation;
+
+  final String _apiKey =
+      "AIzaSyB5vsTeBTbw4amWNXb0DXPnx9PVxQwK6M8"; // Replace with actual API Key
 
   // Store selected ratings (0-5) for each category
   final Map<String, int> _ratings = {
@@ -44,13 +57,61 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
       permissionGranted = await _location.requestPermission();
       if (permissionGranted != PermissionStatus.granted) return;
     }
+    _location.getLocation().then((locationData) {
+      setState(() {
+        _currentLocation = locationData;
+      });
+    });
 
-    _location.onLocationChanged.listen((LocationData locationData) {
-      if (locationData.latitude != null && locationData.longitude != null) {
-        LatLng newLocation = LatLng(locationData.latitude!, locationData.longitude!);
-        _mapController.animateCamera(CameraUpdate.newLatLng(newLocation));
+    _location.onLocationChanged.listen((locationData) {
+      if (!_isUserNavigating) {
+        // Only update location if user isn't navigating
+        setState(() {
+          _currentLocation = locationData;
+        });
+        if (_mapController != null) {
+          _mapController.animateCamera(
+            CameraUpdate.newLatLng(
+                LatLng(locationData.latitude!, locationData.longitude!)),
+          );
+        }
       }
     });
+  }
+
+  // Fetch place predictions
+  Future<void> _fetchPlacePredictions(String input) async {
+    final url = Uri.parse(
+        "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&key=$_apiKey");
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        _predictions = data['predictions'] ?? [];
+      });
+    }
+  }
+
+  // Fetch place coordinates
+  Future<void> _fetchPlaceCoordinates(String placeId) async {
+    final url = Uri.parse(
+        "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$_apiKey");
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final location = data['result']['geometry']['location'];
+      setState(() {
+        _selectedLocation = LatLng(location['lat'], location['lng']);
+        _isUserNavigating =
+            true; // Disable auto-tracking when user selects a place
+      });
+
+      _mapController.animateCamera(
+        CameraUpdate.newLatLngZoom(_selectedLocation!, 15),
+      );
+    }
   }
 
   @override
@@ -60,41 +121,164 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
         children: [
           // Google Map
           GoogleMap(
-            initialCameraPosition: const CameraPosition(target: LatLng(0, 0), zoom: 18),
+            initialCameraPosition: CameraPosition(
+              target: _currentLocation != null
+                  ? LatLng(
+                      _currentLocation!.latitude!, _currentLocation!.longitude!)
+                  : LatLng(0, 0),
+              zoom: 15,
+            ),
             zoomControlsEnabled: false,
             myLocationEnabled: true,
-            myLocationButtonEnabled: true,
+            myLocationButtonEnabled: false,
             onMapCreated: (controller) => _mapController = controller,
+            onCameraMove: (_) {
+              setState(() {
+                _isUserNavigating =
+                    true; // Disable auto-panning when user moves the map
+              });
+            },
+          ),
+
+          // Search Bar
+          Positioned(
+            top: 40,
+            left: 20,
+            right: 20,
+            child: Column(
+              children: [
+                Material(
+                  elevation: 5,
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      if (value.isNotEmpty) {
+                        _fetchPlacePredictions(value);
+                      } else {
+                        setState(() => _predictions = []);
+                      }
+                    },
+                    decoration: InputDecoration(
+                      hintText: "Search a location...",
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.arrow_forward),
+                        onPressed: () {
+                          if (_selectedLocation != null) {
+                            _mapController.animateCamera(
+                              CameraUpdate.newLatLngZoom(
+                                  _selectedLocation!, 15),
+                            );
+                          }
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                  ),
+                ),
+
+                // Predictions List
+                if (_predictions.isNotEmpty)
+                  Container(
+                    margin: const EdgeInsets.only(top: 5),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 5,
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: _predictions
+                          .map(
+                            (prediction) => ListTile(
+                              title: Text(prediction['description']),
+                              onTap: () {
+                                setState(() {
+                                  _searchController.text =
+                                      prediction['description'];
+                                  _selectedPlaceId = prediction['place_id'];
+                                  _predictions = [];
+                                });
+
+                                // Fetch coordinates and stop auto-tracking
+                                _fetchPlaceCoordinates(_selectedPlaceId!);
+                              },
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+
+          // Current Location Button (Above FAB)
+          Positioned(
+            bottom: 120, // Adjust to be above the FAB
+            right: 20,
+            child: FloatingActionButton(
+              onPressed: () {
+                if (_currentLocation != null && _mapController != null) {
+                  _mapController.animateCamera(
+                    CameraUpdate.newLatLngZoom(
+                      LatLng(_currentLocation!.latitude!,
+                          _currentLocation!.longitude!),
+                      15,
+                    ),
+                  );
+                }
+              },
+              backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+              shape: const CircleBorder(),
+              child: const Icon(Icons.my_location,
+                  color: Color.fromARGB(255, 0, 0, 0)),
+            ),
           ),
 
           // Draggable Bottom Sheet (Overlay)
           const ReviewSheet(),
 
+          Positioned(
+            bottom: 50,   // Adjust for vertical position
+            right: 20,    // Adjust for horizontal position
+            child: FloatingActionButton(
+              onPressed: () {
+                setState(() {
+                  _isReviewVisible = !_isReviewVisible;
+                });
+              },
+              backgroundColor: Colors.black,
+              shape: const CircleBorder(),
+              child: Icon(
+                _isReviewVisible ? Icons.arrow_forward : Icons.edit,
+                color: Colors.white,
+              ),
+            ),
+          ),
+
+
           // Floating Review Form (Slides in from the right)
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),
             right: _isReviewVisible ? 20 : -300, // Moves in from the right
-            bottom: 110, // Keeps it slightly above FAB
+            bottom: 120, // Keeps it slightly above FAB
             child: _isReviewVisible ? _buildReviewForm() : Container(),
           ),
         ],
       ),
 
-      // Floating Action Button (Black Background, White Pencil)
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _isReviewVisible = !_isReviewVisible;
-          });
-        },
-        backgroundColor: Colors.black,
-        shape: const CircleBorder(),
-        child: Icon(
-          _isReviewVisible ? Icons.arrow_forward : Icons.edit,
-          color: Colors.white,
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+
     );
   }
 
@@ -120,7 +304,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
           const Text(
             "Write a Review",
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            softWrap: false, 
+            softWrap: false,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 15),
@@ -158,10 +342,11 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Flexible( // Ensures text doesn't cause overflow
+        Flexible(
+          // Ensures text doesn't cause overflow
           child: Text(
-            label, 
-            style: const TextStyle(fontSize: 18, fontFamily: 'Rubik'), 
+            label,
+            style: const TextStyle(fontSize: 18, fontFamily: 'Rubik'),
             softWrap: false,
             overflow: TextOverflow.ellipsis,
           ),
