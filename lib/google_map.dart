@@ -74,7 +74,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),
             right: _isReviewVisible ? 20 : -300, // Moves in from the right
-            bottom: 100, // Keeps it slightly above FAB
+            bottom: 110, // Keeps it slightly above FAB
             child: _isReviewVisible ? _buildReviewForm() : Container(),
           ),
         ],
@@ -100,7 +100,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
 
   Widget _buildReviewForm() {
     return Container(
-      width: 220, // Reduced width to prevent overflow
+      width: 320, // Reduced width to prevent overflow
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -119,22 +119,25 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
         children: [
           const Text(
             "Write a Review",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             softWrap: false, 
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 15),
 
           // Rating categories with stars
           _buildRatingRow("Lighting"),
+          const SizedBox(height: 15),
           _buildRatingRow("Crowded"),
+          const SizedBox(height: 15),
           _buildRatingRow("Security"),
+          const SizedBox(height: 15),
           _buildRatingRow("Accessibility"),
-          const SizedBox(height: 10),
+          const SizedBox(height: 15),
 
           // Comment Box
           TextField(
-            maxLines: 3,
+            maxLines: 5,
             decoration: InputDecoration(
               hintText: "Leave a comment...",
               filled: true,
@@ -158,7 +161,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
         Flexible( // Ensures text doesn't cause overflow
           child: Text(
             label, 
-            style: const TextStyle(fontSize: 16), 
+            style: const TextStyle(fontSize: 18, fontFamily: 'Rubik'), 
             softWrap: false,
             overflow: TextOverflow.ellipsis,
           ),
@@ -174,7 +177,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
               },
               child: Icon(
                 Icons.star,
-                size: 20, // Adjust size to prevent overflow
+                size: 23, // Adjust size to prevent overflow
                 color: index < _ratings[label]! ? Colors.yellow : Colors.black,
               ),
             );
