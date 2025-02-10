@@ -26,9 +26,7 @@ class ReviewTile extends StatelessWidget {
               // Profile Picture
               CircleAvatar(
                 radius: 25,
-                backgroundImage: NetworkImage(
-                  "https://source.unsplash.com/random?sig=$index", // Placeholder
-                ),
+                backgroundColor: const Color.fromARGB(255, 205, 211, 214),
               ),
               const SizedBox(width: 12),
 

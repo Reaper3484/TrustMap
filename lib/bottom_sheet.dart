@@ -116,7 +116,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
                           margin: const EdgeInsets.only(right: 10),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            color: Colors.grey
+                            color: const Color.fromARGB(255, 211, 209, 209)
                           ),
                         );
                       },
