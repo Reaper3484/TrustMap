@@ -16,6 +16,14 @@ class _ReviewSheetState extends State<ReviewSheet> {
     0.75
   ]; // Only two states: Closed & Fully Open
 
+  final List<bool> _expandedStates = List.generate(10, (_) => false);  // List of expanded states for each review
+
+  void _toggleExpansion(int index) {
+    setState(() {
+      _expandedStates[index] = !_expandedStates[index];
+    });
+  }
+
   void _onSheetDragEnd() {
     double currentSize = _controller.size;
 
@@ -183,7 +191,11 @@ class _ReviewSheetState extends State<ReviewSheet> {
                         const NeverScrollableScrollPhysics(), // Prevent scroll conflict
                     itemCount: 5, // Placeholder count
                     itemBuilder: (context, index) {
-                      return ReviewTile(index: index);
+                      return ReviewTile(
+                                index: index,
+                                isExpanded: _expandedStates[index],
+                                onTap: () => _toggleExpansion(index),  // Handle expansion toggle
+                              );
                     },
                   ),
                 ],
