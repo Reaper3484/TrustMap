@@ -9,15 +9,19 @@ class ReviewSheet extends StatefulWidget {
 }
 
 class _ReviewSheetState extends State<ReviewSheet> {
-  final DraggableScrollableController _controller = DraggableScrollableController();
-  final List<double> snapPositions = [0.075, 0.75]; // Only two states: Closed & Fully Open
+  final DraggableScrollableController _controller =
+      DraggableScrollableController();
+  final List<double> snapPositions = [
+    0.075,
+    0.75
+  ]; // Only two states: Closed & Fully Open
 
   void _onSheetDragEnd() {
     double currentSize = _controller.size;
 
     // Find closest snap position
-    double closestSize = snapPositions.reduce((a, b) =>
-        (a - currentSize).abs() < (b - currentSize).abs() ? a : b);
+    double closestSize = snapPositions.reduce(
+        (a, b) => (a - currentSize).abs() < (b - currentSize).abs() ? a : b);
 
     // Animate to the closest snap position
     _controller.animateTo(
@@ -42,7 +46,8 @@ class _ReviewSheetState extends State<ReviewSheet> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(40)),
               boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
             ),
             child: SingleChildScrollView(
@@ -71,12 +76,33 @@ class _ReviewSheetState extends State<ReviewSheet> {
                           height: 100,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: Colors.red,
+                            color: const Color.fromARGB(
+                                255, 255, 201, 201), // White background
+                            border: Border.all(
+                                color: Colors.red, width: 2), // Thin red border
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Text(
-                            "Unsafe Zone",
-                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                "Unsafe Zone",
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold, // Bold text
+                                ),
+                              ),
+                              const SizedBox(height: 5), // Spacing
+                              const Text(
+                                "Safety Rating: 2.1/5", // Example rating (Replace dynamically)
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -86,12 +112,34 @@ class _ReviewSheetState extends State<ReviewSheet> {
                           height: 100,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: Colors.blue,
+                            color: const Color.fromARGB(
+                                255, 201, 203, 255), // White background
+                            border: Border.all(
+                                color: const Color.fromARGB(255, 54, 124, 244),
+                                width: 2), // Thin red border
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Text(
-                            "Closest Safe Zone",
-                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                "Safe Zone",
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 54, 82, 244),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold, // Bold text
+                                ),
+                              ),
+                              const SizedBox(height: 5), // Spacing
+                              const Text(
+                                "Distance: 200m", // Example rating (Replace dynamically)
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 54, 82, 244),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -115,9 +163,8 @@ class _ReviewSheetState extends State<ReviewSheet> {
                           width: 150,
                           margin: const EdgeInsets.only(right: 10),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: const Color.fromARGB(255, 211, 209, 209)
-                          ),
+                              borderRadius: BorderRadius.circular(10),
+                              color: const Color.fromARGB(255, 211, 209, 209)),
                         );
                       },
                     ),
@@ -132,7 +179,8 @@ class _ReviewSheetState extends State<ReviewSheet> {
                   const SizedBox(height: 10),
                   ListView.builder(
                     shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(), // Prevent scroll conflict
+                    physics:
+                        const NeverScrollableScrollPhysics(), // Prevent scroll conflict
                     itemCount: 5, // Placeholder count
                     itemBuilder: (context, index) {
                       return ReviewTile(index: index);
