@@ -399,6 +399,33 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
             ),
           ),
 
+          // SOS Button
+          Positioned(
+            top: 190, // Adjust as needed to position below the hamburger menu
+            right: 19,
+            child: SizedBox(
+              width: 57,  // Set width of the button
+              height: 57, // Set height of the button
+              child: FloatingActionButton(
+                onPressed: _fetchReviews, // Calls the getReviews function on press
+                backgroundColor: const Color.fromARGB(255, 247, 10, 10),
+                shape: const CircleBorder(),
+                child: const Center(
+                  child: Text(
+                    'SOS',  // Text inside the button
+                    style: TextStyle(
+                      fontSize: 20,  // Large font size for the text
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+
+
           Positioned(
             bottom: 50,   // Adjust for vertical position
             right: 20,    // Adjust for horizontal position
