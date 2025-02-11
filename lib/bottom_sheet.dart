@@ -186,19 +186,6 @@ class _ReviewSheetState extends State<ReviewSheet> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
-                  // ListView.builder(
-                  //   shrinkWrap: true,
-                  //   physics:
-                  //       const NeverScrollableScrollPhysics(), // Prevent scroll conflict
-                  //   itemCount: 5, // Placeholder count
-                  //   itemBuilder: (context, index) {
-                  //     return ReviewTile(
-                  //               index: index,
-                  //               isExpanded: _expandedStates[index],
-                  //               onTap: () => _toggleExpansion(index),  // Handle expansion toggle
-                  //             );
-                  //   },
-                  // ),
                   ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),

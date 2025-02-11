@@ -122,7 +122,6 @@ class _RegistrationState extends State<Registration> {
                     GestureDetector(
                       onTap: ()=>{
                         registerUser(),
-                        print("refefe\n\n\n\n\n\n\\")
                       },
                         child: VxBox(child: "Register".text.white.makeCentered().p16()).black.roundedLg.make().px16().py16(),
                     ),

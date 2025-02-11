@@ -226,11 +226,6 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
     }
   }
 
-  void signOut() async
-  {
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>SignInPage()));
-  }
-
   Future<void> _fetchReviews() async {
     if (!mounted) return;
 

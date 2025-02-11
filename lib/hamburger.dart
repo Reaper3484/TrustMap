@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:safety_application/signin_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HamburgerMenu extends StatefulWidget {
   const HamburgerMenu({super.key});
@@ -19,6 +21,12 @@ class _HamburgerMenuState extends State<HamburgerMenu> {
   bool cameraRecording = true;
 
   List<Map<String, String>> contacts = [];
+
+void signOut(BuildContext context) async {
+
+}
+
+
 
   void _addContact() {
     TextEditingController nameController = TextEditingController();
@@ -312,6 +320,7 @@ class _HamburgerMenuState extends State<HamburgerMenu> {
                                 ElevatedButton(
                                   onPressed: () {
                                     // Sign-out logic here
+                                    signOut;
                                     print("User signed out");
                                   },
                                   style: ElevatedButton.styleFrom(
