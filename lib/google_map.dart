@@ -57,24 +57,31 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
       permissionGranted = await _location.requestPermission();
       if (permissionGranted != PermissionStatus.granted) return;
     }
+
     _location.getLocation().then((locationData) {
       setState(() {
         _currentLocation = locationData;
       });
+      if (_currentLocation != null) {
+        _mapController.animateCamera(
+          CameraUpdate.newLatLngZoom(
+            LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
+            15,
+          ),
+        );
+      }
     });
 
     _location.onLocationChanged.listen((locationData) {
       if (!_isUserNavigating) {
-        // Only update location if user isn't navigating
         setState(() {
           _currentLocation = locationData;
         });
-        if (_mapController != null) {
           _mapController.animateCamera(
             CameraUpdate.newLatLng(
-                LatLng(locationData.latitude!, locationData.longitude!)),
+              LatLng(locationData.latitude!, locationData.longitude!),
+            ),
           );
-        }
       }
     });
   }
@@ -229,7 +236,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
             right: 20,
             child: FloatingActionButton(
               onPressed: () {
-                if (_currentLocation != null && _mapController != null) {
+                if (_currentLocation != null) {
                   _mapController.animateCamera(
                     CameraUpdate.newLatLngZoom(
                       LatLng(_currentLocation!.latitude!,
@@ -267,14 +274,20 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
             ),
           ),
 
-
-          // Floating Review Form (Slides in from the right)
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),
             right: _isReviewVisible ? 20 : -300, // Moves in from the right
             bottom: 120, // Keeps it slightly above FAB
-            child: _isReviewVisible ? _buildReviewForm() : Container(),
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isReviewVisible = false; // Close the review form when tapping outside
+                });
+              },
+              child: _isReviewVisible ? _buildReviewForm() : Container(),
+            ),
           ),
+
         ],
       ),
 
