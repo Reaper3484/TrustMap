@@ -279,16 +279,8 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
             duration: const Duration(milliseconds: 300),
             right: _isReviewVisible ? 20 : -300, // Moves in from the right
             bottom: 120, // Keeps it slightly above FAB
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _isReviewVisible = false; // Close the review form when tapping outside
-                });
-              },
               child: _isReviewVisible ? _buildReviewForm() : Container(),
             ),
-          ),
-
         ],
       ),
 
@@ -296,60 +288,73 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
     );
   }
 
-  Widget _buildReviewForm() {
-    return Container(
-      width: 320, // Reduced width to prevent overflow
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Write a Review",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            softWrap: false,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 15),
+Widget _buildReviewForm() {
+  return Container(
+    width: 320, // Reduced width to prevent overflow
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(15),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.2),
+          blurRadius: 10,
+          spreadRadius: 2,
+        ),
+      ],
+    ),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "Write a Review",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
+            ),
+            IconButton(
+              icon: Icon(Icons.close, color: Colors.black),
+              onPressed: () {
+                setState(() {
+                  _isReviewVisible = false;
+                });
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 15),
 
-          // Rating categories with stars
-          _buildRatingRow("Lighting"),
-          const SizedBox(height: 15),
-          _buildRatingRow("Crowded"),
-          const SizedBox(height: 15),
-          _buildRatingRow("Security"),
-          const SizedBox(height: 15),
-          _buildRatingRow("Accessibility"),
-          const SizedBox(height: 15),
+        // Rating categories with stars
+        _buildRatingRow("Lighting"),
+        const SizedBox(height: 15),
+        _buildRatingRow("Crowded"),
+        const SizedBox(height: 15),
+        _buildRatingRow("Security"),
+        const SizedBox(height: 15),
+        _buildRatingRow("Accessibility"),
+        const SizedBox(height: 15),
 
-          // Comment Box
-          TextField(
-            maxLines: 5,
-            decoration: InputDecoration(
-              hintText: "Leave a comment...",
-              filled: true,
-              fillColor: Colors.grey[100],
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
+        // Comment Box
+        TextField(
+          maxLines: 5,
+          decoration: InputDecoration(
+            hintText: "Leave a comment...",
+            filled: true,
+            fillColor: Colors.grey[100],
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 
   // Row for each rating category
   Widget _buildRatingRow(String label) {
