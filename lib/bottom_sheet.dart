@@ -86,10 +86,9 @@ class _ReviewSheetState extends State<ReviewSheet> {
                           height: 100,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: const Color.fromARGB(
-                                255, 255, 201, 201), // White background
+                            color: const Color.fromARGB(138, 253, 164, 164), // White background
                             border: Border.all(
-                                color: Colors.red, width: 2), // Thin red border
+                                color: const Color.fromARGB(255, 109, 109, 109), width: 1), // Thin red border
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Column(
@@ -122,11 +121,10 @@ class _ReviewSheetState extends State<ReviewSheet> {
                           height: 100,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: const Color.fromARGB(
-                                255, 201, 203, 255), // White background
+                            color: const Color.fromARGB(118, 195, 195, 240), // White background
                             border: Border.all(
-                                color: const Color.fromARGB(255, 54, 124, 244),
-                                width: 2), // Thin red border
+                                color: const Color.fromARGB(255, 94, 94, 94),
+                                width: 1), // Thin red border
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Column(
