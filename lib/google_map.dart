@@ -4,6 +4,7 @@ import 'package:location/location.dart';
 import 'package:safety_application/bottom_sheet.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:safety_application/hamburger.dart';
 
 class GoogleMapFlutter extends StatefulWidget {
   const GoogleMapFlutter({super.key});
@@ -146,7 +147,6 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
               });
             },
           ),
-
           // Search Bar
           Positioned(
             top: 40,
@@ -255,6 +255,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
 
           // Draggable Bottom Sheet (Overlay)
           const ReviewSheet(),
+          HamburgerMenu(),
 
           Positioned(
             bottom: 50,   // Adjust for vertical position
