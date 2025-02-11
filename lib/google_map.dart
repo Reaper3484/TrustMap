@@ -5,9 +5,12 @@ import 'package:safety_application/bottom_sheet.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:safety_application/hamburger.dart';
+import 'package:safety_application/config.dart';
+import 'package:safety_application/signin_page.dart';
 
 class GoogleMapFlutter extends StatefulWidget {
-  const GoogleMapFlutter({super.key});
+   final String token;
+  const GoogleMapFlutter({super.key, required this.token});
 
   @override
   State<GoogleMapFlutter> createState() => _GoogleMapFlutterState();
@@ -25,6 +28,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
   String? _selectedPlaceId;
   LatLng? _selectedLocation;
   LocationData? _currentLocation;
+  TextEditingController commentController = TextEditingController();
 
   final String _apiKey =
       "AIzaSyB5vsTeBTbw4amWNXb0DXPnx9PVxQwK6M8"; // Replace with actual API Key
@@ -121,6 +125,65 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
       );
     }
   }
+
+  // Function to submit the review
+  void _submitReview() async {
+    if (_ratings.containsValue(0) || commentController.text.isEmpty) {
+      // If any rating is missing or no comment is provided
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please fill all fields before submitting!")),
+      );
+      return;
+    }
+
+    var reviewData = {
+      "userId": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2FhMWNlNjczNmMzZDgxNTZlMmE3YTMiLCJlbWFpbCI6ImVtYWlsMTIzQGdtYWlsLmNvbSIsImlhdCI6MTczOTIwNDIyOSwiZXhwIjoxNzM5MjA3ODI5fQ.zp7WJpVi9YWmsCJ27mThzUBP8Si_BJ5uO6D2ZoDTQvo",
+      "lighting": _ratings["Lighting"],
+      "crowdDensity": _ratings["Crowded"],
+      "security": _ratings["Security"],
+      "accessibility": _ratings["Accessibility"],
+      "comment": commentController.text,
+      "latitude": _currentLocation!.latitude,
+      "longitude": _currentLocation!.longitude,
+    };
+
+    print("Review JSON: ${jsonEncode(reviewData)}");
+
+    try {
+      var response = await http.post(
+        Uri.parse(review), // Replace with your API URL
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer ${widget.token}",
+        },
+        body: jsonEncode(reviewData),
+      );
+
+      var jsonResponse = jsonDecode(response.body);
+      print("Login API Response: $jsonResponse"); // Debugging
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Review submitted successfully!")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to submit review. Try again!")),
+        );
+      }
+    } catch (e) {
+      print("Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Network error. Please check your connection.")),
+      );
+    }
+  }
+
+  void signOut() async
+  {
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>SignInPage()));
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -262,6 +325,10 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
             right: 20,    // Adjust for horizontal position
             child: FloatingActionButton(
               onPressed: () {
+                if (_isReviewVisible)
+                {
+                  _submitReview();
+                }
                 setState(() {
                   _isReviewVisible = !_isReviewVisible;
                 });
@@ -341,6 +408,7 @@ Widget _buildReviewForm() {
         // Comment Box
         TextField(
           maxLines: 5,
+          controller: commentController,
           decoration: InputDecoration(
             hintText: "Leave a comment...",
             filled: true,

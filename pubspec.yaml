@@ -37,6 +37,13 @@ dependencies:
   google_maps_flutter: ^2.6.0
   location: ^5.0.3
   http: ^0.13.5
+  velocity_x:
+  flutter_rating_bar: ^4.0.1
+  shared_preferences:
+  jwt_decoder:
+  flutter_slidable:
+
+
 
 dev_dependencies:
   flutter_test:
