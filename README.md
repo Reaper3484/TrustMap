@@ -1,6 +1,6 @@
-# safety_application
+# TrustMap
 
-A new Flutter project.
+An app that caters towards the safety of the general public by providing various features such as live location tracking, SOS features, and a user-supported feedback mechanism that is used to give every neighbourhood a safety rating, i.e., how safe it is for the user to visit that neighbourhood. While the user is in an unsafe neighbourhood, the app allows the user to immediately warn his/her contacts, by continuously checking upon the user's safety. If a user fails to answer, the app ensures that in the worst case scenario, no details pertaining to the user's whereabouts are left hidden from investigation authorities.
 
 ## Getting Started
 
