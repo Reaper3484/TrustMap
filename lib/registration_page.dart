@@ -58,7 +58,7 @@ class _RegistrationState extends State<Registration> {
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-                colors: [const Color(0XFFF95A3B),const Color(0XFFF96713)],
+                colors: [const Color.fromARGB(255, 255, 255, 255),const Color.fromARGB(255, 255, 255, 255)],
                 begin: FractionalOffset.topLeft,
                 end: FractionalOffset.bottomCenter,
                 stops: [0.0,0.8],
@@ -68,23 +68,29 @@ class _RegistrationState extends State<Registration> {
           child: Center(
             child: SingleChildScrollView(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   // CommonLogo(),
                   HeightBox(10),
-                  "CREATE YOUR ACCOUNT".text.size(22).yellow100.make(),
+                  "Create account".text.size(22).black.make(),
+                  HeightBox(15),
                   TextField(
                     controller: emailController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        errorStyle: TextStyle(color: Colors.white),
-                        errorText: _isNotValidate ? "Enter Proper Info" : null,
-                        hintText: "Email",
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)))),
+                      contentPadding: EdgeInsets.all(15.0),
+                      filled: true,
+                      fillColor: Colors.white,
+                      errorStyle: TextStyle(color: Colors.white),
+                      errorText: _isNotValidate ? "Enter Proper Info" : null,
+                      hintText: "Email",
+                      enabledBorder: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                        borderSide: BorderSide(color: Color.fromARGB(255, 200, 200, 200), width: 1.0),
+                      ),
+                    ),
                   ).p4().px24(),
+                  HeightBox(10),
                   TextField(
                     controller: passwordController,
                     keyboardType: TextInputType.text,
@@ -100,13 +106,17 @@ class _RegistrationState extends State<Registration> {
 
                           });
                         },),
+                        contentPadding: EdgeInsets.all(15.0),
                         filled: true,
                         fillColor: Colors.white,
                         errorStyle: TextStyle(color: Colors.white),
                         errorText: _isNotValidate ? "Enter Proper Info" : null,
                         hintText: "Password",
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)))),
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                          borderSide: BorderSide(color: Color.fromARGB(255, 200, 200, 200), width: 1.0),
+                        )
+                      ),
                   ).p4().px24(),
                   HStack([
                     GestureDetector(
@@ -114,17 +124,17 @@ class _RegistrationState extends State<Registration> {
                         registerUser(),
                         print("refefe\n\n\n\n\n\n\\")
                       },
-                        child: VxBox(child: "Register".text.white.makeCentered().p16()).green600.roundedLg.make().px16().py16(),
+                        child: VxBox(child: "Register".text.white.makeCentered().p16()).black.roundedLg.make().px16().py16(),
                     ),
                   ]),
+                  HeightBox(20),
                   GestureDetector(
                     onTap: (){
                       print("Sign In");
                       Navigator.push(context, MaterialPageRoute(builder: (context)=>SignInPage()));
                     },
                     child: HStack([
-                      "Already Registered?".text.make(),
-                      " Sign In".text.white.make()
+                      "Already Registered? Sign in.".text.make()
                     ]).centered(),
                   )
                 ],

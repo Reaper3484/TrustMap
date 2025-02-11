@@ -68,7 +68,7 @@ class _SignInPageState extends State<SignInPage> {
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-                colors: [const Color(0XFFF95A3B),const Color(0XFFF96713)],
+                colors: [const Color.fromARGB(255, 255, 255, 255),const Color.fromARGB(255, 255, 255, 255)],
                 begin: FractionalOffset.topLeft,
                 end: FractionalOffset.bottomCenter,
                 stops: [0.0,0.8],
@@ -82,51 +82,61 @@ class _SignInPageState extends State<SignInPage> {
                 children: <Widget>[
                   // CommonLogo(),
                   HeightBox(10),
-                  "Email Sign-In".text.size(22).yellow100.make(),
-
+                  "Sign in".text.size(22).black.make(),
+                  HeightBox(15),
                   TextField(
                     controller: emailController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        hintText: "Email",
-                        errorText: _isNotValidate ? "Enter Proper Info" : null,
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)))),
+                      contentPadding: EdgeInsets.all(15.0),
+                      filled: true,
+                      fillColor: Colors.white,
+                      hintText: "Email",
+                      errorText: _isNotValidate ? "Enter Proper Info" : null,
+                      enabledBorder: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                        borderSide: BorderSide(color: Color.fromARGB(255, 200, 200, 200), width: 1.0),
+                      ),
+                    ),
                   ).p4().px24(),
+                  HeightBox(10),
                   TextField(
                     controller: passwordController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        hintText: "Password",
-                        errorText: _isNotValidate ? "Enter Proper Info" : null,
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)))),
+                      contentPadding: EdgeInsets.all(15.0),
+                      filled: true,
+                      fillColor: Colors.white,
+                      hintText: "Password",
+                      errorText: _isNotValidate ? "Enter Proper Info" : null,
+                      enabledBorder: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                        borderSide: BorderSide(color: Color.fromARGB(255, 200, 200, 200), width: 1.0),
+                      ),
+                    ),
                   ).p4().px24(),
+                  HeightBox(15),
                   GestureDetector(
                     onTap: (){
                         loginUser();
                     },
                     child: HStack([
-                      VxBox(child: "LogIn".text.white.makeCentered().p16()).green600.roundedLg.make(),
+                      VxBox(child: "Login".text.white.makeCentered().p16()).black.roundedLg.make(),
                     ]),
                   ),
+                  HeightBox(25),
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>Registration()));
+                    },
+                    child: HStack([
+                      "Don't have an account? Sign up.".text.make()
+                    ]).centered(),
+                  )
                 ],
               ),
             ),
           ),
-        ),
-        bottomNavigationBar: GestureDetector(
-          onTap: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>Registration()));
-          },
-          child: Container(
-              height: 25,
-              color: Colors.lightBlue,
-              child: Center(child: "Create a new Account..! Sign Up".text.white.makeCentered())),
         ),
       ),
     );
