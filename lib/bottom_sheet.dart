@@ -3,7 +3,8 @@ import 'package:safety_application/review_box.dart';
 
 class ReviewSheet extends StatefulWidget {
   List<Map<String, dynamic>> reviews;
-  ReviewSheet({super.key, required this.reviews});
+  double safetyScore;
+  ReviewSheet({super.key, required this.reviews, required this.safetyScore});
 
   @override
   State<ReviewSheet> createState() => _ReviewSheetState();
@@ -103,8 +104,8 @@ class _ReviewSheetState extends State<ReviewSheet> {
                                 ),
                               ),
                               const SizedBox(height: 5), // Spacing
-                              const Text(
-                                "Safety Rating: 2.1/5", // Example rating (Replace dynamically)
+                              Text(
+                                "Safety Rating: ${widget.safetyScore}", // Example rating (Replace dynamically)
                                 style: TextStyle(
                                   color: Colors.red,
                                   fontSize: 16,

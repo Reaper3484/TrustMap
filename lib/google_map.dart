@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:safety_application/hamburger.dart';
 import 'package:safety_application/config.dart';
-import 'package:safety_application/signin_page.dart';
 import 'package:flutter/services.dart';
 
 class GoogleMapFlutter extends StatefulWidget {
@@ -54,6 +53,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
   Set<Marker> _markers = {};
   Set<Circle> _circles = {};
   List<Map<String, dynamic>> _reviews = [];
+  double currentSafetyScore = 0;
 
   // Fetch markers and circles from JSON data
 Future<List<Map<String, dynamic>>> _loadMarkersData() async {
@@ -239,6 +239,7 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
 
         setState(() {
           _reviews = List<Map<String, dynamic>>.from(data['data']);
+          currentSafetyScore = data['safetyScore']; 
           print(_reviews);
 
         });
@@ -384,7 +385,7 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
           ),
 
           // Draggable Bottom Sheet (Overlay)
-          ReviewSheet(reviews: _reviews,),
+          ReviewSheet(reviews: _reviews, safetyScore: currentSafetyScore),
           HamburgerMenu(),
           // Refresh Button (Below Hamburger Menu)
           Positioned(
