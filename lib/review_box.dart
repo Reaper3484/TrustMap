@@ -4,27 +4,25 @@ class ReviewTile extends StatelessWidget {
   final int index;
   final bool isExpanded;
   final Function() onTap;
+  final Map<String, dynamic> reviewData;
 
   const ReviewTile({
     super.key,
     required this.index,
     required this.isExpanded,
     required this.onTap,
+    required this.reviewData
   });
 
   @override
   Widget build(BuildContext context) {
     // Sample rating for illustration (1-5 stars)
-    double rating = (index % 5) + 1.0;  
-
-    // Individual ratings for Lighting, Security, Accessibility, and Crowds
-    double lightingRating = (index % 5) + 1.0;
-    double securityRating = (index % 4) + 1.0;
-    double accessibilityRating = (index % 3) + 1.0;
-    double crowdsRating = (index % 5) + 1.0;
-
-    // Review text (sample)
-    String reviewText = "This is a sample review about this location. It's a great place with lots of things to explore, and I highly recommend it to everyone. There's a variety of activities to enjoy, from walking to enjoying the view. It's peaceful yet lively.";
+    double lightingRating = (reviewData['lighting'] ?? 0).toDouble();
+    double securityRating = (reviewData['security'] ?? 0).toDouble();
+    double accessibilityRating = (reviewData['accessibility'] ?? 0).toDouble();
+    double crowdsRating = (reviewData['crowdDensity'] ?? 0).toDouble();
+    String reviewText = reviewData['comment']?.toString() ?? "No comment available";
+    String userId = reviewData['userId']?.toString() ?? "Unknown User";
 
     return GestureDetector(
       onTap: onTap,  // Trigger the expansion when the box is tapped
@@ -85,7 +83,7 @@ class ReviewTile extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        "$rating",  // The rating value
+                        "4",  // The rating value
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -113,10 +111,11 @@ class ReviewTile extends StatelessWidget {
 
               // Expandable Review Text
               Text(
-                isExpanded ? reviewText : reviewText.substring(0, 50) + '...',
+                isExpanded || reviewText.length <= 50 
+                  ? reviewText 
+                  : "${reviewText.substring(0, 50)}...",
                 style: const TextStyle(fontSize: 14),
-              ),
-            ],
+              ),            ],
           ),
         ),
       ),

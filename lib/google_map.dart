@@ -53,6 +53,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
 
   Set<Marker> _markers = {};
   Set<Circle> _circles = {};
+  List<Map<String, dynamic>> _reviews = [];
 
   // Fetch markers and circles from JSON data
 Future<List<Map<String, dynamic>>> _loadMarkersData() async {
@@ -230,6 +231,29 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
     Navigator.push(context, MaterialPageRoute(builder: (context)=>SignInPage()));
   }
 
+  Future<void> _fetchReviews() async {
+    if (!mounted) return;
+
+    try {
+      final response = await http.get(Uri.parse(
+        '$reviews?latitude=${_currentLocation!.latitude}&longitude=${_currentLocation!.longitude}'
+      ));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        setState(() {
+          _reviews = List<Map<String, dynamic>>.from(data['data']);
+          print(_reviews);
+
+        });
+      } else {
+        throw Exception('Failed to load reviews: ${response.statusCode}');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -365,8 +389,19 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
           ),
 
           // Draggable Bottom Sheet (Overlay)
-          const ReviewSheet(),
+          ReviewSheet(reviews: _reviews,),
           HamburgerMenu(),
+          // Refresh Button (Below Hamburger Menu)
+          Positioned(
+            top: 120, // Adjust as needed to position below the hamburger menu
+            right: 20,
+            child: FloatingActionButton(
+              onPressed: _fetchReviews, // Calls the getReviews function on press
+              backgroundColor: Colors.white,
+              shape: const CircleBorder(),
+              child: const Icon(Icons.refresh, color: Colors.black),
+            ),
+          ),
 
           Positioned(
             bottom: 50,   // Adjust for vertical position

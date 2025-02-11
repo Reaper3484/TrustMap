@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:safety_application/review_box.dart';
 
 class ReviewSheet extends StatefulWidget {
-  const ReviewSheet({super.key});
+  List<Map<String, dynamic>> reviews;
+  ReviewSheet({super.key, required this.reviews});
 
   @override
   State<ReviewSheet> createState() => _ReviewSheetState();
@@ -185,19 +186,37 @@ class _ReviewSheetState extends State<ReviewSheet> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
+                  // ListView.builder(
+                  //   shrinkWrap: true,
+                  //   physics:
+                  //       const NeverScrollableScrollPhysics(), // Prevent scroll conflict
+                  //   itemCount: 5, // Placeholder count
+                  //   itemBuilder: (context, index) {
+                  //     return ReviewTile(
+                  //               index: index,
+                  //               isExpanded: _expandedStates[index],
+                  //               onTap: () => _toggleExpansion(index),  // Handle expansion toggle
+                  //             );
+                  //   },
+                  // ),
                   ListView.builder(
-                    shrinkWrap: true,
-                    physics:
-                        const NeverScrollableScrollPhysics(), // Prevent scroll conflict
-                    itemCount: 5, // Placeholder count
-                    itemBuilder: (context, index) {
-                      return ReviewTile(
-                                index: index,
-                                isExpanded: _expandedStates[index],
-                                onTap: () => _toggleExpansion(index),  // Handle expansion toggle
-                              );
-                    },
-                  ),
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: widget.reviews.length,
+                        itemBuilder: (context, index) {
+                          // Safety check to avoid out-of-bounds errors
+                          if (index >= _expandedStates.length) {
+                            return const SizedBox.shrink(); // Skip invalid indices
+                          }
+                          final review = widget.reviews[index];
+                          return ReviewTile(
+                            index: index,
+                            isExpanded: _expandedStates[index],
+                            onTap: () => _toggleExpansion,
+                            reviewData: review,
+                          );
+                        },
+                      ),
                 ],
               ),
             ),
