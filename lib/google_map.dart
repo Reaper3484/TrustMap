@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:safety_application/hamburger.dart';
 import 'package:safety_application/config.dart';
 import 'package:safety_application/signin_page.dart';
+import 'package:flutter/services.dart';
 
 class GoogleMapFlutter extends StatefulWidget {
    final String token;
@@ -45,6 +46,51 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
   void initState() {
     super.initState();
     _initializeLocationTracking();
+    _loadMarkersData().then((data) {
+      _addMarkersAndCircles(data); // Add markers and circles after data is fetched
+    });
+  }
+
+  Set<Marker> _markers = {};
+  Set<Circle> _circles = {};
+
+  // Fetch markers and circles from JSON data
+Future<List<Map<String, dynamic>>> _loadMarkersData() async {
+  // Load the JSON file from assets
+  String jsonString = await rootBundle.loadString('assets/markers.json');
+  
+  // Decode the JSON string
+  final List<dynamic> jsonResponse = json.decode(jsonString);
+  return jsonResponse.map((data) => data as Map<String, dynamic>).toList();
+}
+
+  void _addMarkersAndCircles(List<Map<String, dynamic>> data) {
+    Set<Marker> markers = {};
+    Set<Circle> circles = {};
+
+    for (var item in data) {
+      final position = LatLng(item['latitude'], item['longitude']);
+      final marker = Marker(
+        markerId: MarkerId(item['title']),
+        position: position,
+        infoWindow: InfoWindow(title: item['title']),
+      );
+      final circle = Circle(
+        circleId: CircleId(item['title']),
+        center: position,
+        radius: item['radius'].toDouble(),
+        fillColor: const Color.fromARGB(136, 255, 132, 132).withOpacity(0.2), // Translucent color
+        strokeWidth: 1,
+        strokeColor: const Color.fromARGB(255, 250, 20, 20),
+      );
+      markers.add(marker);
+      circles.add(circle);
+    }
+
+    setState(() {
+      _markers = markers;
+      _circles = circles;
+    });
   }
 
   void _initializeLocationTracking() async {
@@ -203,6 +249,8 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
             onMapCreated: (controller) => _mapController = controller,
+            // markers: _markers,
+            circles: _circles,
             onCameraMove: (_) {
               setState(() {
                 _isUserNavigating =
