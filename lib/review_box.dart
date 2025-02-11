@@ -40,7 +40,7 @@ class ReviewTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top Row: Profile Picture, Username, and Rating
+              // Top Row: Profile Picture, Username, Rating, and Buttons
               Row(
                 children: [
                   // Profile Picture
@@ -73,13 +73,13 @@ class ReviewTile extends StatelessWidget {
                     ),
                   ),
 
-                  // Safety Rating (Big Black Star and Rating Value)
+                  // Safety Rating (Star Icon and Rating Value)
                   Row(
                     children: [
                       Icon(
                         Icons.star,
                         color: Colors.black,
-                        size: 28,
+                        size: 20, // Slightly smaller star icon for balance
                       ),
                       const SizedBox(width: 8),
                       Text(
@@ -89,6 +89,16 @@ class ReviewTile extends StatelessWidget {
                           fontSize: 18,
                         ),
                       ),
+                    ],
+                  ),
+
+                  // Buttons (Agree and Disagree)
+                  const SizedBox(width: 12),
+                  Row(
+                    children: [
+                      _buildActionButton("Agree"),
+                      const SizedBox(width: 8),
+                      _buildActionButton("Disagree"),
                     ],
                   ),
                 ],
@@ -115,7 +125,8 @@ class ReviewTile extends StatelessWidget {
                   ? reviewText 
                   : "${reviewText.substring(0, 50)}...",
                 style: const TextStyle(fontSize: 14),
-              ),            ],
+              ),
+            ],
           ),
         ),
       ),
@@ -145,6 +156,26 @@ class ReviewTile extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+
+  // Helper function to create the Agree/Disagree buttons
+  Widget _buildActionButton(String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.black),  // Dark border
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: Colors.black,
+        ),
+      ),
     );
   }
 }
