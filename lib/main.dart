@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:safety_application/google_map.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:safety_application/signin_page.dart';
+import 'package:safety_application/new_signin_page.dart';
 
 
 void main() async {

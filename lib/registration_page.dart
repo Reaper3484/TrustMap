@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:velocity_x/velocity_x.dart';
-import 'package:safety_application/signin_page.dart';
+import 'package:safety_application/new_signin_page.dart';
 import 'package:http/http.dart' as http;
 import 'config.dart';
 
@@ -122,6 +122,7 @@ class _RegistrationState extends State<Registration> {
                     GestureDetector(
                       onTap: ()=>{
                         registerUser(),
+                        print("registering")
                       },
                         child: VxBox(child: "Register".text.white.makeCentered().p16()).black.roundedLg.make().px16().py16(),
                     ),
