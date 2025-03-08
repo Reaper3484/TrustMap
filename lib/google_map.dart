@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:safety_application/bottom_sheet.dart';
@@ -30,8 +31,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
   LocationData? _currentLocation;
   TextEditingController commentController = TextEditingController();
 
-  final String _apiKey =
-      "AIzaSyB5vsTeBTbw4amWNXb0DXPnx9PVxQwK6M8"; // Replace with actual API Key
+  final String _apiKey = dotenv.env['MAPS_API_KEY'] ?? "";
 
   // Store selected ratings (0-5) for each category
   final Map<String, int> _ratings = {
