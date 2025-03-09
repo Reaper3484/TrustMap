@@ -69,6 +69,13 @@ flutter_icons:
 
 # The following section is specific to Flutter packages.
 flutter:
+  fonts:
+    - family: Helvetica
+      fonts:
+        - asset: assets/Helvetica.ttf
+        - asset: assets/Helvetica-Bold.ttf
+          weight: 600
+
 
   assets:
     - assets/markers.json
@@ -108,3 +115,4 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+

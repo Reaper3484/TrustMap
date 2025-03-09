@@ -11,6 +11,7 @@ class ReviewSheet extends StatefulWidget {
 }
 
 class _ReviewSheetState extends State<ReviewSheet> {
+  int _selectedTabIndex = 0; // 0 for Admin Reviews, 1 for User Reviews
   final DraggableScrollableController _controller =
       DraggableScrollableController();
   final List<double> snapPositions = [
@@ -53,12 +54,12 @@ class _ReviewSheetState extends State<ReviewSheet> {
         return GestureDetector(
           onVerticalDragEnd: (_) => _onSheetDragEnd(), // Snap on release
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.only(left: 22, right: 22, top: 10),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(40)),
-              boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
+                  const BorderRadius.vertical(top: Radius.circular(28)),
+              boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 4)],
             ),
             child: SingleChildScrollView(
               controller: scrollController,
@@ -68,111 +69,61 @@ class _ReviewSheetState extends State<ReviewSheet> {
                   // Drag Handle
                   Center(
                     child: Container(
-                      width: 50,
+                      width: 100,
                       height: 5,
                       decoration: BoxDecoration(
-                        color: Colors.grey[400],
+                        color: Colors.grey,
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  
+                  const SizedBox(height: 30),
 
-                  // Unsafe & Safe Zone Indicators
+                  // PlaceName (change to current place)
+                  Container(
+                    padding: EdgeInsets.only(left: 15),
+                    child: const Text(
+                      "Kelambakkam",
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+
+                  const SizedBox(height: 2),
+
+                  // Change the number to match safety
                   Row(
                     children: [
-                      Expanded(
-                        child: Container(
-                          height: 100,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(138, 253, 164, 164), // White background
-                            border: Border.all(
-                                color: const Color.fromARGB(255, 109, 109, 109), width: 1), // Thin red border
-                            borderRadius: BorderRadius.circular(10),
+                      Padding(
+                        padding: EdgeInsets.only(left: 15),
+                        child:
+                          const Text(
+                            "Safety Rating: ",
+                            style: TextStyle(fontSize: 14),
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                "Unsafe Zone",
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold, // Bold text
-                                ),
-                              ),
-                              const SizedBox(height: 5), // Spacing
-                              Text(
-                                "Safety Rating: ${widget.safetyScore}", // Example rating (Replace dynamically)
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Container(
-                          height: 100,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(118, 195, 195, 240), // White background
-                            border: Border.all(
-                                color: const Color.fromARGB(255, 94, 94, 94),
-                                width: 1), // Thin red border
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                "Safe Zone",
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 54, 82, 244),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold, // Bold text
-                                ),
-                              ),
-                              const SizedBox(height: 5), // Spacing
-                              const Text(
-                                "Distance: 200m", // Example rating (Replace dynamically)
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 54, 82, 244),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      const Text(
+                        "6 (moderate)", // change this to >5 (unsafe), or <8 (safe), with red and green
+                        style: TextStyle(fontSize: 14, color: Colors.orange),
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 20),
 
-                  // Photo Gallery (Horizontal Scroll)
-                  const Text(
-                    "Photos",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
                   SizedBox(
-                    height: 120,
+                    height: 140,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: 5, // Placeholder count
                       itemBuilder: (context, index) {
                         return Container(
-                          width: 150,
+                          width: 210,
                           margin: const EdgeInsets.only(right: 10),
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: const Color.fromARGB(255, 211, 209, 209)),
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.grey,
+                          )
                         );
                       },
                     ),

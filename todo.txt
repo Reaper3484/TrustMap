@@ -1,0 +1,6 @@
+Settings
+	Log out
+
+	dark mode?
+
+	SOS

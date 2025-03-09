@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(fontFamily: 'Helvetica'),
       // home: (token != null && JwtDecoder.isExpired(token) == false )?GoogleMapFlutter(token: token):SignInPage()
 
       home: GoogleMapFlutter(token: 'token'), // Directly showing the map
