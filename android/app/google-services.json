@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "768852341385",
+    "project_id": "trustmap-d9d6a",
+    "storage_bucket": "trustmap-d9d6a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:768852341385:android:3e3cb1ddceee0147f28c58",
+        "android_client_info": {
+          "package_name": "com.example.safety_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPdyVIok7Jxdv9zDdQ_6SoFVzV2v299Yg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
