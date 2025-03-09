@@ -304,10 +304,9 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
       );
       return;
     }
-
     var reviewData = {
       "userId":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2FhMWNlNjczNmMzZDgxNTZlMmE3YTMiLCJlbWFpbCI6ImVtYWlsMTIzQGdtYWlsLmNvbSIsImlhdCI6MTczOTIwNDIyOSwiZXhwIjoxNzM5MjA3ODI5fQ.zp7WJpVi9YWmsCJ27mThzUBP8Si_BJ5uO6D2ZoDTQvo",
+          "${widget.token}",
       "lighting": _ratings["Lighting"],
       "crowdDensity": _ratings["Crowded"],
       "security": _ratings["Security"],
@@ -319,9 +318,15 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
 
     print("Review JSON: ${jsonEncode(reviewData)}");
 
+    _fetchReviews();
+
     try {
       var response = await http.post(
         Uri.parse(review), // Replace with your API URL
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer ${widget.token}",
+        },
         body: jsonEncode(reviewData),
       );
 
@@ -349,6 +354,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
     if (!mounted) return;
 
     try {
+      print('$reviews?latitude=${_currentLocation!.latitude}&longitude=${_currentLocation!.longitude}');
       final response = await http.get(Uri.parse(
           '$reviews?latitude=${_currentLocation!.latitude}&longitude=${_currentLocation!.longitude}'));
 
