@@ -10,7 +10,7 @@ import 'package:safety_application/config.dart';
 import 'package:flutter/services.dart';
 
 class GoogleMapFlutter extends StatefulWidget {
-   final String token;
+  final String token;
   const GoogleMapFlutter({super.key, required this.token});
 
   @override
@@ -44,9 +44,11 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
   @override
   void initState() {
     super.initState();
+    print("API Key loaded: ${_apiKey.isEmpty ? 'No' : 'Yes'}"); // Debug print
     _initializeLocationTracking();
     _loadMarkersData().then((data) {
-      _addMarkersAndCircles(data); // Add markers and circles after data is fetched
+      _addMarkersAndCircles(
+          data); // Add markers and circles after data is fetched
     });
   }
 
@@ -56,14 +58,14 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
   double currentSafetyScore = 0;
 
   // Fetch markers and circles from JSON data
-Future<List<Map<String, dynamic>>> _loadMarkersData() async {
-  // Load the JSON file from assets
-  String jsonString = await rootBundle.loadString('assets/markers.json');
-  
-  // Decode the JSON string
-  final List<dynamic> jsonResponse = json.decode(jsonString);
-  return jsonResponse.map((data) => data as Map<String, dynamic>).toList();
-}
+  Future<List<Map<String, dynamic>>> _loadMarkersData() async {
+    // Load the JSON file from assets
+    String jsonString = await rootBundle.loadString('assets/markers.json');
+
+    // Decode the JSON string
+    final List<dynamic> jsonResponse = json.decode(jsonString);
+    return jsonResponse.map((data) => data as Map<String, dynamic>).toList();
+  }
 
   void _addMarkersAndCircles(List<Map<String, dynamic>> data) {
     Set<Marker> markers = {};
@@ -80,7 +82,8 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
         circleId: CircleId(item['title']),
         center: position,
         radius: item['radius'].toDouble(),
-        fillColor: const Color.fromARGB(136, 255, 132, 132).withOpacity(0.2), // Translucent color
+        fillColor: const Color.fromARGB(136, 255, 132, 132)
+            .withOpacity(0.2), // Translucent color
         strokeWidth: 1,
         strokeColor: const Color.fromARGB(255, 250, 20, 20),
       );
@@ -129,26 +132,42 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
         setState(() {
           _currentLocation = locationData;
         });
-          _mapController.animateCamera(
-            CameraUpdate.newLatLng(
-              LatLng(locationData.latitude!, locationData.longitude!),
-            ),
-          );
+        _mapController.animateCamera(
+          CameraUpdate.newLatLng(
+            LatLng(locationData.latitude!, locationData.longitude!),
+          ),
+        );
       }
     });
   }
 
   // Fetch place predictions
   Future<void> _fetchPlacePredictions(String input) async {
-    final url = Uri.parse(
-        "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&key=$_apiKey");
-    final response = await http.get(url);
+    if (_apiKey.isEmpty) {
+      print("Error: API key is empty");
+      return;
+    }
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      setState(() {
-        _predictions = data['predictions'] ?? [];
-      });
+    try {
+      final url = Uri.parse(
+          "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&key=$_apiKey");
+      print("Calling API: $url"); // Debug URL
+
+      final response = await http.get(url);
+      print("API Response code: ${response.statusCode}");
+      print("API Response body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          _predictions = data['predictions'] ?? [];
+          print("Predictions count: ${_predictions.length}");
+        });
+      } else {
+        print("API error: ${response.statusCode}, ${response.body}");
+      }
+    } catch (e) {
+      print("Exception in _fetchPlacePredictions: $e");
     }
   }
 
@@ -184,7 +203,8 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
     }
 
     var reviewData = {
-      "userId": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2FhMWNlNjczNmMzZDgxNTZlMmE3YTMiLCJlbWFpbCI6ImVtYWlsMTIzQGdtYWlsLmNvbSIsImlhdCI6MTczOTIwNDIyOSwiZXhwIjoxNzM5MjA3ODI5fQ.zp7WJpVi9YWmsCJ27mThzUBP8Si_BJ5uO6D2ZoDTQvo",
+      "userId":
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2FhMWNlNjczNmMzZDgxNTZlMmE3YTMiLCJlbWFpbCI6ImVtYWlsMTIzQGdtYWlsLmNvbSIsImlhdCI6MTczOTIwNDIyOSwiZXhwIjoxNzM5MjA3ODI5fQ.zp7WJpVi9YWmsCJ27mThzUBP8Si_BJ5uO6D2ZoDTQvo",
       "lighting": _ratings["Lighting"],
       "crowdDensity": _ratings["Crowded"],
       "security": _ratings["Security"],
@@ -231,17 +251,15 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
 
     try {
       final response = await http.get(Uri.parse(
-        '$reviews?latitude=${_currentLocation!.latitude}&longitude=${_currentLocation!.longitude}'
-      ));
+          '$reviews?latitude=${_currentLocation!.latitude}&longitude=${_currentLocation!.longitude}'));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
         setState(() {
           _reviews = List<Map<String, dynamic>>.from(data['data']);
-          currentSafetyScore = data['safetyScore']; 
+          currentSafetyScore = data['safetyScore'];
           print(_reviews);
-
         });
       } else {
         throw Exception('Failed to load reviews: ${response.statusCode}');
@@ -392,7 +410,8 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
             top: 120, // Adjust as needed to position below the hamburger menu
             right: 20,
             child: FloatingActionButton(
-              onPressed: _fetchReviews, // Calls the getReviews function on press
+              onPressed:
+                  _fetchReviews, // Calls the getReviews function on press
               backgroundColor: Colors.white,
               shape: const CircleBorder(),
               child: const Icon(Icons.refresh, color: Colors.black),
@@ -404,17 +423,18 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
             top: 190, // Adjust as needed to position below the hamburger menu
             right: 19,
             child: SizedBox(
-              width: 57,  // Set width of the button
+              width: 57, // Set width of the button
               height: 57, // Set height of the button
               child: FloatingActionButton(
-                onPressed: _fetchReviews, // Calls the getReviews function on press
+                onPressed:
+                    _fetchReviews, // Calls the getReviews function on press
                 backgroundColor: const Color.fromARGB(255, 247, 10, 10),
                 shape: const CircleBorder(),
                 child: const Center(
                   child: Text(
-                    'SOS',  // Text inside the button
+                    'SOS', // Text inside the button
                     style: TextStyle(
-                      fontSize: 20,  // Large font size for the text
+                      fontSize: 20, // Large font size for the text
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -424,15 +444,12 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
             ),
           ),
 
-
-
           Positioned(
-            bottom: 50,   // Adjust for vertical position
-            right: 20,    // Adjust for horizontal position
+            bottom: 50, // Adjust for vertical position
+            right: 20, // Adjust for horizontal position
             child: FloatingActionButton(
               onPressed: () {
-                if (_isReviewVisible)
-                {
+                if (_isReviewVisible) {
                   _submitReview();
                 }
                 setState(() {
@@ -452,83 +469,81 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
             duration: const Duration(milliseconds: 300),
             right: _isReviewVisible ? 20 : -300, // Moves in from the right
             bottom: 120, // Keeps it slightly above FAB
-              child: _isReviewVisible ? _buildReviewForm() : Container(),
-            ),
+            child: _isReviewVisible ? _buildReviewForm() : Container(),
+          ),
         ],
       ),
-
-
     );
   }
 
-Widget _buildReviewForm() {
-  return Container(
-    width: 320, // Reduced width to prevent overflow
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(15),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.2),
-          blurRadius: 10,
-          spreadRadius: 2,
-        ),
-      ],
-    ),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              "Write a Review",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              softWrap: false,
-              overflow: TextOverflow.ellipsis,
-            ),
-            IconButton(
-              icon: Icon(Icons.close, color: Colors.black),
-              onPressed: () {
-                setState(() {
-                  _isReviewVisible = false;
-                });
-              },
-            ),
-          ],
-        ),
-        const SizedBox(height: 15),
+  Widget _buildReviewForm() {
+    return Container(
+      width: 320, // Reduced width to prevent overflow
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 10,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Write a Review",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+              ),
+              IconButton(
+                icon: Icon(Icons.close, color: Colors.black),
+                onPressed: () {
+                  setState(() {
+                    _isReviewVisible = false;
+                  });
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 15),
 
-        // Rating categories with stars
-        _buildRatingRow("Lighting"),
-        const SizedBox(height: 15),
-        _buildRatingRow("Crowded"),
-        const SizedBox(height: 15),
-        _buildRatingRow("Security"),
-        const SizedBox(height: 15),
-        _buildRatingRow("Accessibility"),
-        const SizedBox(height: 15),
+          // Rating categories with stars
+          _buildRatingRow("Lighting"),
+          const SizedBox(height: 15),
+          _buildRatingRow("Crowded"),
+          const SizedBox(height: 15),
+          _buildRatingRow("Security"),
+          const SizedBox(height: 15),
+          _buildRatingRow("Accessibility"),
+          const SizedBox(height: 15),
 
-        // Comment Box
-        TextField(
-          maxLines: 5,
-          controller: commentController,
-          decoration: InputDecoration(
-            hintText: "Leave a comment...",
-            filled: true,
-            fillColor: Colors.grey[100],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
+          // Comment Box
+          TextField(
+            maxLines: 5,
+            controller: commentController,
+            decoration: InputDecoration(
+              hintText: "Leave a comment...",
+              filled: true,
+              fillColor: Colors.grey[100],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   // Row for each rating category
   Widget _buildRatingRow(String label) {
