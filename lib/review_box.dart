@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+var largeBorderRadius = 28.0;
+var mediumBorderRadius = 20.0;
+var smallBorderRadius = 16.0;
+
 class ReviewTile extends StatelessWidget {
   final int index;
   final bool isExpanded;
@@ -32,7 +36,7 @@ class ReviewTile extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.grey[100],
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(mediumBorderRadius),
         ),
         margin: const EdgeInsets.only(bottom: 10),
         height: isExpanded ? 250 : 160,  // Animate height of the container

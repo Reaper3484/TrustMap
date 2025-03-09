@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+var largeBorderRadius = 28.0;
+var mediumBorderRadius = 20.0;
+var smallBorderRadius = 16.0;
+
 class HamburgerMenu extends StatefulWidget {
   const HamburgerMenu({super.key});
 
@@ -106,7 +110,7 @@ void signOut(BuildContext context) async {
     return Stack(
       children: [
         Positioned(
-          top: 120,
+          top: 40,
           left: 20,
           child: AnimatedContainer(
             duration: Duration(milliseconds: 250),
@@ -116,17 +120,15 @@ void signOut(BuildContext context) async {
                 isMenuFullyExpanded = isMenuOpen;
               });
             },
-            width: isMenuOpen ? 370 : 60,
-            height: isMenuOpen ? 600 : 60,
+            width: isMenuOpen ? 370 : 55,
+            height: isMenuOpen ? 600 : 55,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(isMenuOpen ? 20 : 30),
+              borderRadius: BorderRadius.circular(mediumBorderRadius),
               boxShadow: [
                 BoxShadow(
-                  color: const Color.fromARGB(58, 95, 95, 95),
+                  color: Colors.grey,
                   blurRadius: 1,
-                  spreadRadius: 1,
-                  offset: Offset(0, 4),
                 ),
               ],
             ),

@@ -9,6 +9,10 @@ import 'package:safety_application/hamburger.dart';
 import 'package:safety_application/config.dart';
 import 'package:flutter/services.dart';
 
+var largeBorderRadius = 28.0;
+var mediumBorderRadius = 20.0;
+var smallBorderRadius = 16.0;
+
 class GoogleMapFlutter extends StatefulWidget {
    final String token;
   const GoogleMapFlutter({super.key, required this.token});
@@ -18,6 +22,7 @@ class GoogleMapFlutter extends StatefulWidget {
 }
 
 class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
+
   late GoogleMapController _mapController;
   final Location _location = Location();
   bool _isReviewVisible = false; // Track if review form is open
@@ -281,13 +286,13 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
           // Search Bar
           Positioned(
             top: 40,
-            left: 20,
+            left: 90,
             right: 20,
             child: Column(
               children: [
                 Material(
                   elevation: 5,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(smallBorderRadius),
                   child: TextField(
                     controller: _searchController,
                     onChanged: (value) {
@@ -312,7 +317,7 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
                         },
                       ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(smallBorderRadius),
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
@@ -331,7 +336,7 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.grey,
                           blurRadius: 5,
                         ),
                       ],
@@ -464,15 +469,14 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
 Widget _buildReviewForm() {
   return Container(
     width: 320, // Reduced width to prevent overflow
-    padding: const EdgeInsets.all(16),
+    padding: const EdgeInsets.all(26),
     decoration: BoxDecoration(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(15),
+      borderRadius: BorderRadius.circular(mediumBorderRadius),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.grey,
           blurRadius: 10,
-          spreadRadius: 2,
         ),
       ],
     ),
