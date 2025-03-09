@@ -31,6 +31,12 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
   LocationData? _currentLocation;
   TextEditingController commentController = TextEditingController();
 
+  // User marker
+  Marker? _droppedPinMarker;
+  String _droppedPinAddress = "";
+  bool _isAddressLoading = false;
+
+
   final String _apiKey = dotenv.env['MAPS_API_KEY'] ?? "";
 
   // Store selected ratings (0-5) for each category
@@ -97,6 +103,103 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
     });
   }
 
+  // Add function to handle map long press
+  void _onMapLongPress(LatLng position) async {
+    setState(() {
+      _isAddressLoading = true;
+      // Create a new marker for the dropped pin
+      _droppedPinMarker = Marker(
+        markerId: const MarkerId('dropped_pin'),
+        position: position,
+        infoWindow: InfoWindow(title: 'Loading...'),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      );
+      
+      // Update the markers set to include the dropped pin
+      _markers = {
+        ..._markers,
+        _droppedPinMarker!,
+      };
+    });
+    
+    // Get the address for the dropped pin
+    await _getAddressFromLatLng(position);
+  }
+
+  // Function to get address from coordinates using reverse geocoding
+  Future<void> _getAddressFromLatLng(LatLng position) async {
+    try {
+      final url = Uri.parse(
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$_apiKey'
+      );
+      
+      final response = await http.get(url);
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        
+        if (data['status'] == 'OK' && data['results'].isNotEmpty) {
+          // Get the formatted address from the first result
+          final formattedAddress = data['results'][0]['formatted_address'];
+          
+          // Extract the locality or neighborhood from the address components
+          String placeName = formattedAddress;
+          for (var component in data['results'][0]['address_components']) {
+            final types = component['types'] as List;
+            if (types.contains('locality') || 
+                types.contains('neighborhood') || 
+                types.contains('sublocality_level_1')) {
+              placeName = component['long_name'];
+              break;
+            }
+          }
+          
+          setState(() {
+            _isAddressLoading = false;
+            _droppedPinAddress = placeName;
+            
+            // Update the marker with the address
+            _droppedPinMarker = Marker(
+              markerId: const MarkerId('dropped_pin'),
+              position: position,
+              infoWindow: InfoWindow(
+                title: placeName,
+                snippet: formattedAddress,
+              ),
+              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+            );
+            
+            // Update the markers set
+            _markers = {
+              ..._markers,
+              _droppedPinMarker!,
+            };
+          });
+          
+          // Show a snackbar with the address
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Location: $placeName'),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      } else {
+        setState(() {
+          _isAddressLoading = false;
+          _droppedPinAddress = 'Unable to get address';
+        });
+      }
+    } catch (e) {
+      print('Error getting address: $e');
+      setState(() {
+        _isAddressLoading = false;
+        _droppedPinAddress = 'Error getting address';
+      });
+    }
+  }
+
+
   void _initializeLocationTracking() async {
     bool serviceEnabled;
     PermissionStatus permissionGranted;
@@ -156,7 +259,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
       final response = await http.get(url);
       print("API Response code: ${response.statusCode}");
       print("API Response body: ${response.body}");
-  
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
@@ -287,7 +390,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
             onMapCreated: (controller) => _mapController = controller,
-            // markers: _markers,
+            markers: _markers,
             circles: _circles,
             onCameraMove: (_) {
               setState(() {
@@ -295,7 +398,14 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
                     true; // Disable auto-panning when user moves the map
               });
             },
+            onLongPress: _onMapLongPress,
           ),
+
+          if (_isAddressLoading)
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
+
           // Search Bar
           Positioned(
             top: 40,
