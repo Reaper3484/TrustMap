@@ -41,7 +41,8 @@ class _SignInPageState extends State<SignInPage> {
       var reqBody = {
         "email": emailController.text,
         "password": passwordController.text,
-        if (isAdmin) "auth_key": authKeyController.text,
+        if (isAdmin) "role": "admin" else "role": "user",
+        if (isAdmin) "secretKey": authKeyController.text,
       };
 
       var response = await http.post(Uri.parse(login),

@@ -322,10 +322,6 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
     try {
       var response = await http.post(
         Uri.parse(review), // Replace with your API URL
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer ${widget.token}",
-        },
         body: jsonEncode(reviewData),
       );
 

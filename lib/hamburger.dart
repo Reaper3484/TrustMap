@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:safety_application/new_signin_page.dart';
 
 class HamburgerMenu extends StatefulWidget {
   const HamburgerMenu({super.key});
@@ -20,8 +21,9 @@ class _HamburgerMenuState extends State<HamburgerMenu> {
 
   List<Map<String, String>> contacts = [];
 
-void signOut(BuildContext context) async {
-
+void signOut(BuildContext context) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => SignInPage()));
 }
 
 
@@ -318,7 +320,7 @@ void signOut(BuildContext context) async {
                                 ElevatedButton(
                                   onPressed: () {
                                     // Sign-out logic here
-                                    signOut;
+                                    signOut(context);
                                     print("User signed out");
                                   },
                                   style: ElevatedButton.styleFrom(
