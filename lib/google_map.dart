@@ -156,7 +156,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
       final response = await http.get(url);
       print("API Response code: ${response.statusCode}");
       print("API Response body: ${response.body}");
-
+  
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
