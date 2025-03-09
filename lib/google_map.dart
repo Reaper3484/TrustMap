@@ -23,6 +23,7 @@ class GoogleMapFlutter extends StatefulWidget {
 
 class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
 
+  int? _selectedNumber; 
   late GoogleMapController _mapController;
   final Location _location = Location();
   bool _isReviewVisible = false; // Track if review form is open
@@ -468,7 +469,8 @@ Future<List<Map<String, dynamic>>> _loadMarkersData() async {
 
 Widget _buildReviewForm() {
   return Container(
-    width: 320, // Reduced width to prevent overflow
+    width: 370,
+    height: 580,
     padding: const EdgeInsets.all(26),
     decoration: BoxDecoration(
       color: Colors.white,
@@ -488,84 +490,202 @@ Widget _buildReviewForm() {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              "Write a Review",
+              "Write Report",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               softWrap: false,
               overflow: TextOverflow.ellipsis,
             ),
-            IconButton(
-              icon: Icon(Icons.close, color: Colors.black),
+            IconButton( // Add a Close Button
+              icon: const Icon(Icons.close),
               onPressed: () {
-                setState(() {
-                  _isReviewVisible = false;
-                });
+                // Show a confirmation dialog
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      backgroundColor: Colors.white, // Set the background color to white
+                      title: const Text("Discard Report?"),
+                      content: const Text("Are you sure you want to discard this report?"),
+                      actions: [
+                        TextButton(
+                          child: const Text("Cancel"),
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                        ),
+                        TextButton(
+                          child: const Text("OK"),
+                          onPressed: () {
+                            setState(() {
+                              _isReviewVisible = false; // Close the report pane
+                              // You might want to reset any input fields here as well
+                            });
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
             ),
           ],
         ),
         const SizedBox(height: 15),
-
-        // Rating categories with stars
-        _buildRatingRow("Lighting"),
+        Container(
+          child: TextField(
+            maxLines: 1,
+            controller: commentController,
+            decoration: InputDecoration(
+              hintText: "Title...",
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey, width: 0.2),
+                borderRadius: BorderRadius.circular(smallBorderRadius),
+              ),
+            ),
+          ),
+        ),
         const SizedBox(height: 15),
-        _buildRatingRow("Crowded"),
-        const SizedBox(height: 15),
-        _buildRatingRow("Security"),
-        const SizedBox(height: 15),
-        _buildRatingRow("Accessibility"),
-        const SizedBox(height: 15),
-
-        // Comment Box
         TextField(
           maxLines: 5,
           controller: commentController,
           decoration: InputDecoration(
-            hintText: "Leave a comment...",
+            hintText: "Body...",
             filled: true,
-            fillColor: Colors.grey[100],
+            fillColor: Colors.white,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
+              borderSide: BorderSide(color: Colors.grey, width: 0.2),
+              borderRadius: BorderRadius.circular(smallBorderRadius),
             ),
           ),
+        ),
+        const SizedBox(height: 15),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                // Add image logic here
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black, // Use backgroundColor
+                foregroundColor: Colors.white, // Use foregroundColor
+              ),
+              child: const Text('Add image'),
+            ),
+            const SizedBox(width: 10),
+            OutlinedButton(
+              onPressed: () {
+                // Take photo logic here
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.black, // use foreground color
+                side: const BorderSide(color: Colors.black),
+              ),
+              child: const Text('Take photo', style: TextStyle(color: Colors.black)),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 30),
+
+        Row(
+          children: [
+            Padding(padding: EdgeInsets.only(left: 10),),
+            const Text(
+              "Rate overall safety:",
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+
+        SizedBox(height: 5),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (int i = 1; i <= 10; i++)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                child: RatingButton(
+                  number: i,
+                  isSelected: _selectedNumber == i, // Check if this button is selected
+                  onSelected: (int selectedNumber) {
+                    setState(() {
+                      _selectedNumber = selectedNumber; // Update the selected number
+                    });
+                  },
+                ),
+              ),
+          ],
+        ),
+
+        SizedBox(height: 30),
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                // Add location selection logic here
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black, // Use backgroundColor
+                foregroundColor: Colors.white, // Use foregroundColor
+              ),
+              child: const Text('Select location'),
+            ),
+          ],
         ),
       ],
     ),
   );
 }
+}
 
-  // Row for each rating category
-  Widget _buildRatingRow(String label) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Flexible(
-          // Ensures text doesn't cause overflow
+class RatingButton extends StatefulWidget {
+  final int number;
+  final Function(int) onSelected;
+  final bool isSelected; // Add isSelected parameter
+
+  const RatingButton({
+    Key? key,
+    required this.number,
+    required this.onSelected,
+    required this.isSelected, // Add isSelected to constructor
+  }) : super(key: key);
+
+  @override
+  _RatingButtonState createState() => _RatingButtonState();
+}
+
+class _RatingButtonState extends State<RatingButton> {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        widget.onSelected(widget.number); // Call the callback with the selected number
+      },
+      child: Container(
+        width: 26,
+        height: 26,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: widget.isSelected ? Colors.black : Colors.white, // Use widget.isSelected
+          border: Border.all(color: Colors.black),
+        ),
+        child: Center(
           child: Text(
-            label,
-            style: const TextStyle(fontSize: 18, fontFamily: 'Rubik'),
-            softWrap: false,
-            overflow: TextOverflow.ellipsis,
+            widget.number.toString(),
+            style: TextStyle(
+              color: widget.isSelected ? Colors.white : Colors.black, // Use widget.isSelected
+            ),
           ),
         ),
-        Row(
-          mainAxisSize: MainAxisSize.min, // Prevents extra spacing
-          children: List.generate(5, (index) {
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  _ratings[label] = index + 1; // Update rating
-                });
-              },
-              child: Icon(
-                Icons.star,
-                size: 23, // Adjust size to prevent overflow
-                color: index < _ratings[label]! ? Colors.yellow : Colors.black,
-              ),
-            );
-          }),
-        ),
-      ],
+      ),
     );
   }
 }
