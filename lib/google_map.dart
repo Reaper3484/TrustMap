@@ -67,6 +67,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
   Set<Marker> _markers = {};
   Set<Circle> _circles = {};
   List<Map<String, dynamic>> _reviews = [];
+  List<Map<String, dynamic>> _adminReviews = [];
   double currentSafetyScore = 0;
 
   // Fetch markers and circles from JSON data
@@ -404,29 +405,33 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
     }
   }
 
-  Future<void> _fetchReviews() async {
-    if (!mounted) return;
+   Future<void> _fetchReviews() async {
+  if (!mounted) return;
 
-    try {
-      print('$reviews?latitude=${_currentLocation!.latitude}&longitude=${_currentLocation!.longitude}');
-      final response = await http.get(Uri.parse(
-          '$reviews?latitude=${_currentLocation!.latitude}&longitude=${_currentLocation!.longitude}'));
+  try {
+    print('$reviews?latitude=${_currentLocation!.latitude}&longitude=${_currentLocation!.longitude}');
+    final response = await http.get(Uri.parse(
+        '$reviews?latitude=${_currentLocation!.latitude}&longitude=${_currentLocation!.longitude}'));
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
 
-        setState(() {
-          _reviews = List<Map<String, dynamic>>.from(data['data']);
-          currentSafetyScore = data['safetyScore'];
-          print(_reviews);
-        });
-      } else {
-        throw Exception('Failed to load reviews: ${response.statusCode}');
-      }
-    } catch (e) {
-      print(e);
+      setState(() {
+        _reviews = List<Map<String, dynamic>>.from(data['data']);
+        currentSafetyScore = data['safetyScore'];
+        // Include admin reviews here:
+        _adminReviews = List<Map<String, dynamic>>.from(data['adminreviews']);
+        print(_reviews);
+        print(_adminReviews);  // Check if admin reviews are being fetched correctly
+      });
+    } else {
+      throw Exception('Failed to load reviews: ${response.statusCode}');
     }
+  } catch (e) {
+    print(e);
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
