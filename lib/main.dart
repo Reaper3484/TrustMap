@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: (token != null && JwtDecoder.isExpired(token) == false )?GoogleMapFlutter(token: token, isAdmin: isAdmin,):SignInPage()
+      home: (token != null && JwtDecoder.isExpired(token) == false )?GoogleMapFlutter(token: token, isAdmin: isAdmin ?? false,):SignInPage()
 
       // home: GoogleMapFlutter(token: 'token', isAdmin: true,), // Directly showing the map
     );

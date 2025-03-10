@@ -7,9 +7,10 @@ const smallBorderRadius = 16.0;
 
 class ReviewSheet extends StatefulWidget {
   List<Map<String, dynamic>> reviews;
+  List<Map<String, dynamic>> adminReviews;
   double safetyScore;
   String location;
-  ReviewSheet({super.key, required this.reviews, required this.safetyScore, required this.location});
+  ReviewSheet({super.key, required this.reviews, required this.adminReviews, required this.safetyScore, required this.location});
 
   @override
   State<ReviewSheet> createState() => _ReviewSheetState();
@@ -194,27 +195,31 @@ class _ReviewSheetState extends State<ReviewSheet> {
                   const SizedBox(height: 20),
 
                   // Reviews (Vertical Scroll)
-                  const Text(
-                    "User Reports",
+                  Text(
+                    _selectedTabIndex == 1 ? "User Reports" : "Admin Reports",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
                   ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: widget.reviews.length,
-                        itemBuilder: (context, index) {
-                          // Safety check to avoid out-of-bounds errors
-                          if (index >= _expandedStates.length) {
-                            return const SizedBox.shrink(); // Skip invalid indices
-                          }
-                          final review = widget.reviews[index];
-                          return ReviewTile(
-                            index: index,
-                            reviewData: review,
-                          );
-                        },
-                      ),
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: _selectedTabIndex == 0 ? widget.adminReviews.length : widget.reviews.length,
+                    itemBuilder: (context, index) {
+                      final selectedReviews = _selectedTabIndex == 0 ? widget.adminReviews : widget.reviews;
+
+                      // Safety check to avoid out-of-bounds errors
+                      if (index >= selectedReviews.length) {
+                        return const SizedBox.shrink(); // Skip invalid indices
+                      }
+
+                      final review = selectedReviews[index];
+                      return ReviewTile(
+                        index: index,
+                        reviewData: review,
+                        isAdmin: _selectedTabIndex == 0 ? true : false
+                      );
+                    },
+                  ),
                 ],
               ),
             ),

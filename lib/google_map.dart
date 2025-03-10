@@ -574,7 +574,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
           ),
 
           // Draggable Bottom Sheet (Overlay)
-          ReviewSheet(reviews: _reviews, safetyScore: currentSafetyScore, location: _droppedPinAddress),
+          ReviewSheet(reviews: _reviews, adminReviews: _adminReviews, safetyScore: currentSafetyScore, location: _droppedPinAddress),
           HamburgerMenu(),
           // Refresh Button (Below Hamburger Menu)
           Positioned(
