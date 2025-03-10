@@ -1,33 +1,41 @@
 import 'package:flutter/material.dart';
 
-class ReviewTile extends StatelessWidget {
+class ReviewTile extends StatefulWidget {
   final int index;
-  final bool isExpanded;
-  final Function() onTap;
   final Map<String, dynamic> reviewData;
 
   const ReviewTile({
     super.key,
     required this.index,
-    required this.isExpanded,
-    required this.onTap,
-    required this.reviewData
+    required this.reviewData,
   });
 
   @override
+  _ReviewTileState createState() => _ReviewTileState();
+}
+
+class _ReviewTileState extends State<ReviewTile> {
+  bool isExpanded = false;
+
+  void toggleExpanded() {
+    setState(() {
+      isExpanded = !isExpanded;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Sample rating for illustration (1-5 stars)
-    double lightingRating = (reviewData['lighting'] ?? 0).toDouble();
-    double securityRating = (reviewData['security'] ?? 0).toDouble();
-    double accessibilityRating = (reviewData['accessibility'] ?? 0).toDouble();
-    double crowdsRating = (reviewData['crowdDensity'] ?? 0).toDouble();
-    String reviewText = reviewData['comment']?.toString() ?? "No comment available";
-    String userId = reviewData['userId']?.toString() ?? "Unknown User";
+    double lightingRating = (widget.reviewData['lighting'] ?? 0).toDouble();
+    double securityRating = (widget.reviewData['security'] ?? 0).toDouble();
+    double accessibilityRating = (widget.reviewData['accessibility'] ?? 0).toDouble();
+    double crowdsRating = (widget.reviewData['crowdDensity'] ?? 0).toDouble();
+    String reviewText = widget.reviewData['comment']?.toString() ?? "No comment available";
+    String status = widget.reviewData['status']?.toString() ?? "No status";
 
     return GestureDetector(
-      onTap: onTap,  // Trigger the expansion when the box is tapped
+      onTap: toggleExpanded,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),  // Animation duration
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
@@ -35,99 +43,94 @@ class ReviewTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
         ),
         margin: const EdgeInsets.only(bottom: 10),
-        height: isExpanded ? 250 : 160,  // Animate height of the container
-        child: SingleChildScrollView(  // Wrap the content inside a scroll view
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Top Row: Profile Picture, Username, Rating, and Buttons
-              Row(
-                children: [
-                  // Profile Picture
-                  CircleAvatar(
-                    radius: 25,
-                    backgroundColor: const Color.fromARGB(255, 205, 211, 214),
-                  ),
-                  const SizedBox(width: 12),
+        constraints: const BoxConstraints(minHeight: 160),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Top Row: Profile Picture, Username, Rating
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 25,
+                  backgroundColor: const Color.fromARGB(255, 205, 211, 214),
+                ),
+                const SizedBox(width: 12),
 
-                  // Username & Number of Reviews
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "User ${index + 1}",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        Text(
-                          "${(index + 1) * 2} reviews", // Placeholder for number of reviews left
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Safety Rating (Star Icon and Rating Value)
-                  Row(
+                // Username & Review Count
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        Icons.star,
-                        color: Colors.black,
-                        size: 20, // Slightly smaller star icon for balance
-                      ),
-                      const SizedBox(width: 8),
                       Text(
-                        "4",  // The rating value
+                        "User ${widget.index + 1}",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        "${(widget.index + 1) * 2} reviews",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
                         ),
                       ),
                     ],
                   ),
+                ),
 
-                  // Buttons (Agree and Disagree)
-                  const SizedBox(width: 12),
-                  Row(
-                    children: [
-                      _buildActionButton("Agree"),
-                      const SizedBox(width: 8),
-                      _buildActionButton("Disagree"),
+                // Rating (with optional green tick for approved status)
+                Row(
+                  children: [
+                    Icon(
+                      Icons.star,
+                      color: Colors.black,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      "4", // Placeholder rating
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    if (status == "approved") ...[
+                      const SizedBox(width: 5),
+                      const Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                        size: 18,
+                      ),
                     ],
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
+            ),
 
-              const SizedBox(height: 8),
+            const SizedBox(height: 8),
 
-              // Individual Ratings
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildRatingColumn("Lighting", lightingRating),
-                  _buildRatingColumn("Security", securityRating),
-                  _buildRatingColumn("Accessibility", accessibilityRating),
-                  _buildRatingColumn("Crowds", crowdsRating),
-                ],
-              ),
+            // Ratings for different categories
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildRatingColumn("Lighting", lightingRating),
+                _buildRatingColumn("Security", securityRating),
+                _buildRatingColumn("Accessibility", accessibilityRating),
+                _buildRatingColumn("Crowds", crowdsRating),
+              ],
+            ),
 
-              const SizedBox(height: 8),
+            const SizedBox(height: 8),
 
-              // Expandable Review Text
-              Text(
-                isExpanded || reviewText.length <= 50 
-                  ? reviewText 
+            // Expandable Review Text
+            Text(
+              isExpanded || reviewText.length <= 50
+                  ? reviewText
                   : "${reviewText.substring(0, 50)}...",
-                style: const TextStyle(fontSize: 14),
-              ),
-            ],
-          ),
+              style: const TextStyle(fontSize: 14),
+            ),
+          ],
         ),
       ),
     );
@@ -143,39 +146,19 @@ class ReviewTile extends StatelessWidget {
         ),
         Row(
           children: [
-            Icon(
+            const Icon(
               Icons.star,
               size: 16,
-              color: const Color.fromARGB(255, 0, 0, 0),
+              color: Colors.black,
             ),
             const SizedBox(width: 4),
             Text(
-              "$rating",  // Individual rating
+              "$rating",
               style: const TextStyle(fontSize: 14),
             ),
           ],
         ),
       ],
-    );
-  }
-
-  // Helper function to create the Agree/Disagree buttons
-  Widget _buildActionButton(String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black),  // Dark border
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: Colors.black,
-        ),
-      ),
     );
   }
 }

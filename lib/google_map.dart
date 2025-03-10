@@ -611,7 +611,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                "Write a Review",
+                "Write Report",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
@@ -643,7 +643,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
             maxLines: 5,
             controller: commentController,
             decoration: InputDecoration(
-              hintText: "Leave a comment...",
+              hintText: "Explain the incident...",
               filled: true,
               fillColor: Colors.grey[100],
               border: OutlineInputBorder(

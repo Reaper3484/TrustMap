@@ -181,7 +181,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
 
                   // Reviews (Vertical Scroll)
                   const Text(
-                    "Reviews",
+                    "User Reports",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
@@ -197,8 +197,6 @@ class _ReviewSheetState extends State<ReviewSheet> {
                           final review = widget.reviews[index];
                           return ReviewTile(
                             index: index,
-                            isExpanded: _expandedStates[index],
-                            onTap: () => _toggleExpansion,
                             reviewData: review,
                           );
                         },
