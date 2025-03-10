@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:safety_application/review_box.dart';
 
+const largeBorderRadius = 28.0;
+const mediumBorderRadius = 20.0;
+const smallBorderRadius = 16.0;
+
 class ReviewSheet extends StatefulWidget {
   List<Map<String, dynamic>> reviews;
   double safetyScore;
@@ -13,18 +17,13 @@ class ReviewSheet extends StatefulWidget {
 class _ReviewSheetState extends State<ReviewSheet> {
   final DraggableScrollableController _controller =
       DraggableScrollableController();
+  int _selectedTabIndex = 0; // 0 for Admin Reviews, 1 for User Reviews
   final List<double> snapPositions = [
     0.075,
     0.75
   ]; // Only two states: Closed & Fully Open
 
   final List<bool> _expandedStates = List.generate(10, (_) => false);  // List of expanded states for each review
-
-  void _toggleExpansion(int index) {
-    setState(() {
-      _expandedStates[index] = !_expandedStates[index];
-    });
-  }
 
   void _onSheetDragEnd() {
     double currentSize = _controller.size;
@@ -38,6 +37,73 @@ class _ReviewSheetState extends State<ReviewSheet> {
       closestSize,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
+    );
+  }
+
+  Widget _buildTabBox() {
+    return Container(
+      margin: const EdgeInsets.only(top: 30, bottom: 30),
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey, width: 0.5),
+        borderRadius: BorderRadius.circular(mediumBorderRadius),
+      ),
+      child: Row(
+        children: [
+          // Admin Reviews Tab
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedTabIndex = 0;
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                decoration: BoxDecoration(
+                  color: _selectedTabIndex == 0 ? Colors.black : Colors.transparent,
+                  borderRadius: BorderRadius.circular(smallBorderRadius),
+                ),
+                child: Center(
+                  child: Text(
+                    "Admin Reports",
+                    style: TextStyle(
+                      color: _selectedTabIndex == 0 ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // User Reviews Tab
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedTabIndex = 1;
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                decoration: BoxDecoration(
+                  color: _selectedTabIndex == 1 ? Colors.black : Colors.transparent,
+                  borderRadius: BorderRadius.circular(smallBorderRadius),
+                ),
+                child: Center(
+                  child: Text(
+                    "User Reports",
+                    style: TextStyle(
+                      color: _selectedTabIndex == 1 ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -68,7 +134,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
                   // Drag Handle
                   Center(
                     child: Container(
-                      width: 50,
+                      width: 100,
                       height: 5,
                       decoration: BoxDecoration(
                         color: Colors.grey[400],
@@ -76,103 +142,50 @@ class _ReviewSheetState extends State<ReviewSheet> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 30),
 
-                  // Unsafe & Safe Zone Indicators
+                  // PlaceName (change to current place)
+                  Container(
+                    padding: EdgeInsets.only(left: 15),
+                    child: const Text(
+                      "Kelambakkam",
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+
+                  // Change the number to match safety
                   Row(
                     children: [
-                      Expanded(
-                        child: Container(
-                          height: 100,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(138, 253, 164, 164), // White background
-                            border: Border.all(
-                                color: const Color.fromARGB(255, 109, 109, 109), width: 1), // Thin red border
-                            borderRadius: BorderRadius.circular(10),
+                      Padding(
+                        padding: EdgeInsets.only(left: 15),
+                        child:
+                          const Text(
+                            "Safety Rating: ",
+                            style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.bold),
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                "Unsafe Zone",
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold, // Bold text
-                                ),
-                              ),
-                              const SizedBox(height: 5), // Spacing
-                              Text(
-                                "Safety Rating: ${widget.safetyScore}", // Example rating (Replace dynamically)
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Container(
-                          height: 100,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(118, 195, 195, 240), // White background
-                            border: Border.all(
-                                color: const Color.fromARGB(255, 94, 94, 94),
-                                width: 1), // Thin red border
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                "Safe Zone",
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 54, 82, 244),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold, // Bold text
-                                ),
-                              ),
-                              const SizedBox(height: 5), // Spacing
-                              const Text(
-                                "Distance: 200m", // Example rating (Replace dynamically)
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 54, 82, 244),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      const Text(
+                        "6 (moderate)", // change this to >5 (unsafe), or <8 (safe), with red and green
+                        style: TextStyle(fontSize: 14, color: Colors.orange, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
 
-                  // Photo Gallery (Horizontal Scroll)
-                  const Text(
-                    "Photos",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
+                  _buildTabBox(),
+
                   SizedBox(
-                    height: 120,
+                    height: 140,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: 5, // Placeholder count
                       itemBuilder: (context, index) {
                         return Container(
-                          width: 150,
+                          width: 210,
                           margin: const EdgeInsets.only(right: 10),
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: const Color.fromARGB(255, 211, 209, 209)),
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.grey,
+                          )
                         );
                       },
                     ),
