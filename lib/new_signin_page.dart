@@ -55,8 +55,9 @@ class _SignInPageState extends State<SignInPage> {
       if (jsonResponse['status']) {
         var myToken = jsonResponse['token'];
         prefs.setString('token', myToken);
+        prefs.setBool('isAdmin', isAdmin);
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => GoogleMapFlutter(token: myToken)));
+            context, MaterialPageRoute(builder: (context) => GoogleMapFlutter(token: myToken, isAdmin: isAdmin)));
       } else {
         print('Something went wrong: ${jsonResponse['message']}');
       }

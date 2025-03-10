@@ -11,7 +11,8 @@ import 'package:flutter/services.dart';
 
 class GoogleMapFlutter extends StatefulWidget {
   final String token;
-  const GoogleMapFlutter({super.key, required this.token});
+  final bool isAdmin;
+  const GoogleMapFlutter({super.key, required this.token, required this.isAdmin});
 
   @override
   State<GoogleMapFlutter> createState() => _GoogleMapFlutterState();
@@ -56,6 +57,8 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
       _addMarkersAndCircles(
           data); // Add markers and circles after data is fetched
     });
+
+    print("You are a " + widget.isAdmin.toString());
   }
 
   Set<Marker> _markers = {};
@@ -295,8 +298,62 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
     }
   }
 
-  // Function to submit the review
-  void _submitReview() async {
+  void _submitReviewAdmin() async {
+    if (_ratings.containsValue(0) || commentController.text.isEmpty) {
+      // If any rating is missing or no comment is provided
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please fill all fields before submitting!")),
+      );
+      return;
+    }
+    var reviewData = {
+      "userId":
+          "${widget.token}",
+      "lighting": _ratings["Lighting"],
+      "crowdDensity": _ratings["Crowded"],
+      "security": _ratings["Security"],
+      "accessibility": _ratings["Accessibility"],
+      "comment": commentController.text,
+      "latitude": _currentLocation!.latitude,
+      "longitude": _currentLocation!.longitude,
+    };
+
+    print("Review JSON: ${jsonEncode(reviewData)}");
+
+    _fetchReviews();
+
+    try {
+      var response = await http.post(
+        Uri.parse(review), // Replace with your API URL
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer ${widget.token}",
+        },
+        body: jsonEncode(reviewData),
+      );
+
+      var jsonResponse = jsonDecode(response.body);
+      print("Login API Response: $jsonResponse"); // Debugging
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Review submitted successfully!")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to submit review. Try again!")),
+        );
+      }
+    } catch (e) {
+      print("Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Network error. Please check your connection.")),
+      );
+    }
+  }
+
+
+  void _submitReviewUser() async {
     if (_ratings.containsValue(0) || commentController.text.isEmpty) {
       // If any rating is missing or no comment is provided
       ScaffoldMessenger.of(context).showSnackBar(
@@ -562,7 +619,13 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
             child: FloatingActionButton(
               onPressed: () {
                 if (_isReviewVisible) {
-                  _submitReview();
+                  if (widget.isAdmin)
+                  {
+                    _submitReviewAdmin();
+                  } else
+                  {
+                    _submitReviewUser();
+                  }
                 }
                 setState(() {
                   _isReviewVisible = !_isReviewVisible;

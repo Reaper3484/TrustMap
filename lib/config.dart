@@ -3,3 +3,5 @@ final registration = '${url}register';
 final login = '${url}login';
 final review = '${url}review';
 final reviews= '${url}reviews';
+final send_review = '${url}adminreview';
+final get_review = '${url}adminreviews';

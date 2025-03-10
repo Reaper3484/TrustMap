@@ -14,14 +14,16 @@ void main() async {
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp();
   await NotificationService.instance.initialize();
-  runApp(MyApp(token: prefs.getString('token'),));
+  runApp(MyApp(token: prefs.getString('token'), isAdmin: prefs.getBool('isAdmin'),));
 }
 
 class MyApp extends StatelessWidget {
 
   final token;
+  final isAdmin;
   const MyApp({
     @required this.token,
+    @required this.isAdmin,
     super.key,
 });
 
@@ -29,9 +31,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: (token != null && JwtDecoder.isExpired(token) == false )?GoogleMapFlutter(token: token):SignInPage()
+      home: (token != null && JwtDecoder.isExpired(token) == false )?GoogleMapFlutter(token: token, isAdmin: isAdmin,):SignInPage()
 
-      // home: GoogleMapFlutter(token: 'token'), // Directly showing the map
+      // home: GoogleMapFlutter(token: 'token', isAdmin: true,), // Directly showing the map
     );
   }
 }
