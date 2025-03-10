@@ -108,7 +108,7 @@ void signOut(BuildContext context) {
     return Stack(
       children: [
         Positioned(
-          top: 120,
+          top: 50,
           left: 20,
           child: AnimatedContainer(
             duration: Duration(milliseconds: 250),
@@ -118,7 +118,7 @@ void signOut(BuildContext context) {
                 isMenuFullyExpanded = isMenuOpen;
               });
             },
-            width: isMenuOpen ? 370 : 60,
+            width: isMenuOpen ? 355 : 60,
             height: isMenuOpen ? 600 : 60,
             decoration: BoxDecoration(
               color: Colors.white,
@@ -138,7 +138,7 @@ void signOut(BuildContext context) {
                     child: Column(
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               "Settings",

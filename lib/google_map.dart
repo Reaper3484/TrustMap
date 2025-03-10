@@ -469,8 +469,8 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
 
           // Search Bar
           Positioned(
-            top: 40,
-            left: 20,
+            top: 50,
+            left: 90,
             right: 20,
             child: Column(
               children: [
@@ -575,7 +575,6 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
 
           // Draggable Bottom Sheet (Overlay)
           ReviewSheet(reviews: _reviews, adminReviews: _adminReviews, safetyScore: currentSafetyScore, location: _droppedPinAddress),
-          HamburgerMenu(),
           // Refresh Button (Below Hamburger Menu)
           Positioned(
             top: 120, // Adjust as needed to position below the hamburger menu
@@ -615,6 +614,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
             ),
           ),
 
+          HamburgerMenu(),
           Positioned(
             bottom: 50, // Adjust for vertical position
             right: 20, // Adjust for horizontal position
