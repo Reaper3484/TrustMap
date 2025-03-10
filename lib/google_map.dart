@@ -32,10 +32,12 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
   LatLng? _selectedLocation;
   LocationData? _currentLocation;
   TextEditingController commentController = TextEditingController();
+  TextEditingController adminCommentControllerB = TextEditingController();
+  TextEditingController adminCommentControllerT = TextEditingController();
 
   // User marker
   Marker? _droppedPinMarker;
-  String _droppedPinAddress = "";
+  String _droppedPinAddress = "Kellambakkam";
   bool _isAddressLoading = false;
 
 
@@ -180,13 +182,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
             };
           });
           
-          // Show a snackbar with the address
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Location: $placeName'),
-              duration: const Duration(seconds: 3),
-            ),
-          );
+          _droppedPinAddress = '$placeName';
         }
       } else {
         setState(() {
@@ -300,7 +296,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
   }
 
   void _submitReviewAdmin() async {
-    if (_ratings.containsValue(0) || commentController.text.isEmpty) {
+    if (_selectedNumber == 0|| adminCommentControllerB.text.isEmpty || adminCommentControllerT.text.isEmpty) {
       // If any rating is missing or no comment is provided
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Please fill all fields before submitting!")),
@@ -310,13 +306,12 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
     var reviewData = {
       "userId":
           "${widget.token}",
-      "lighting": _ratings["Lighting"],
-      "crowdDensity": _ratings["Crowded"],
-      "security": _ratings["Security"],
-      "accessibility": _ratings["Accessibility"],
-      "comment": commentController.text,
+      "title": adminCommentControllerT.text,
+      "body": adminCommentControllerB.text,
+      "rating": _selectedNumber,
       "latitude": _currentLocation!.latitude,
       "longitude": _currentLocation!.longitude,
+      "location": "Tambaram"
     };
 
     print("Review JSON: ${jsonEncode(reviewData)}");
@@ -325,7 +320,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
 
     try {
       var response = await http.post(
-        Uri.parse(review), // Replace with your API URL
+        Uri.parse(send_admin_review), // Replace with your API URL
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer ${widget.token}",
@@ -341,6 +336,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
           SnackBar(content: Text("Review submitted successfully!")),
         );
       } else {
+        print("Status code: " + response.statusCode.toString());
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Failed to submit review. Try again!")),
         );
@@ -380,7 +376,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
 
     try {
       var response = await http.post(
-        Uri.parse(review), // Replace with your API URL
+        Uri.parse(send_user_review), // Replace with your API URL
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer ${widget.token}",
@@ -551,7 +547,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
 
           // Current Location Button (Above FAB)
           Positioned(
-            bottom: 120, // Adjust to be above the FAB
+            bottom: 140, // Adjust to be above the FAB
             right: 20,
             child: FloatingActionButton(
               onPressed: () {
@@ -573,7 +569,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
           ),
 
           // Draggable Bottom Sheet (Overlay)
-          ReviewSheet(reviews: _reviews, safetyScore: currentSafetyScore),
+          ReviewSheet(reviews: _reviews, safetyScore: currentSafetyScore, location: _droppedPinAddress),
           HamburgerMenu(),
           // Refresh Button (Below Hamburger Menu)
           Positioned(
@@ -825,7 +821,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
           Container(
             child: TextField(
               maxLines: 1,
-              controller: commentController,
+              controller: adminCommentControllerT,
               decoration: InputDecoration(
                 hintText: "Title...",
                 filled: true,
@@ -840,7 +836,7 @@ class _GoogleMapFlutterState extends State<GoogleMapFlutter> {
           const SizedBox(height: 15),
           TextField(
             maxLines: 5,
-            controller: commentController,
+            controller: adminCommentControllerB,
             decoration: InputDecoration(
               hintText: "Body...",
               filled: true,

@@ -8,7 +8,8 @@ const smallBorderRadius = 16.0;
 class ReviewSheet extends StatefulWidget {
   List<Map<String, dynamic>> reviews;
   double safetyScore;
-  ReviewSheet({super.key, required this.reviews, required this.safetyScore});
+  String location;
+  ReviewSheet({super.key, required this.reviews, required this.safetyScore, required this.location});
 
   @override
   State<ReviewSheet> createState() => _ReviewSheetState();
@@ -111,8 +112,8 @@ class _ReviewSheetState extends State<ReviewSheet> {
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       controller: _controller,
-      initialChildSize: 0.075,
-      minChildSize: 0.075,
+      initialChildSize: 0.14,
+      minChildSize: 0.14,
       maxChildSize: 0.75,
       snap: true, // Enables snapping
       builder: (context, scrollController) {
@@ -142,13 +143,13 @@ class _ReviewSheetState extends State<ReviewSheet> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 15),
 
                   // PlaceName (change to current place)
                   Container(
                     padding: EdgeInsets.only(left: 15),
-                    child: const Text(
-                      "Kelambakkam",
+                    child:  Text(
+                      widget.location,
                       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                   ),
